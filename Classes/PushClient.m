@@ -30,30 +30,31 @@ static float JOBINTERVAL = 17.0f;
 //    [self CopyOfDataBaseIfNeeded];
 //    //번들에 있는 데이터베이스를 복사 - end
     
-//    //앱이 완전 종료 후 푸쉬 받을때 - start
-//    if (launchOptions) {
-//        //       NSLog(@"Count : %d",   launchOptions.count);
-//        
-//        NSArray *allKeys = [launchOptions allKeys];
-//        NSArray *allValues = [launchOptions allValues];
-//        
-//        
-//        for (int i=0; i < [allKeys count]; i++) {
-//            NSLog(@"allKeys : %@",[allKeys objectAtIndex:i]);
-//            NSLog(@"allValues : %@",[allValues objectAtIndex:i]);
-//        }
-//        
-//        NSDictionary *remoteNotificationKeyDictionary = [launchOptions valueForKey:@"UIApplicationLaunchOptionsRemoteNotificationKey"];
-//        NSDictionary *apsDictionary = [remoteNotificationKeyDictionary valueForKey:@"aps"];
-//        
-//        NSString *message = [apsDictionary objectForKey:@"alert"];
-//        NSString *messageForm = [remoteNotificationKeyDictionary valueForKey:@"messageFrom"];
-//        
-//        NSLog(@"alert : %@", message);
-//        [NSTimer scheduledTimerWithTimeInterval:240.0f target:self selector:@selector(testTime) userInfo:nil repeats:NO];
-//        
-//    }
-//    //앱이 완전 종료 후 푸쉬 받을때 - end
+    //앱이 완전 종료 후 푸쉬 받을때 - start
+    if (launchOptions) {
+        //       NSLog(@"Count : %d",   launchOptions.count);
+        
+        NSArray *allKeys = [launchOptions allKeys];
+        NSArray *allValues = [launchOptions allValues];
+        
+        for (int i=0; i < [allKeys count]; i++) {
+            NSLog(@"allKeys : %@",[allKeys objectAtIndex:i]);
+            NSLog(@"allValues : %@",[allValues objectAtIndex:i]);
+        }
+        
+        NSDictionary *remoteNotificationKeyDictionary = [launchOptions valueForKey:@"UIApplicationLaunchOptionsRemoteNotificationKey"];
+        NSDictionary *apsDictionary = [remoteNotificationKeyDictionary valueForKey:@"aps"];
+        
+        NSString *message = [apsDictionary objectForKey:@"alert"];
+        NSString *messageForm = [remoteNotificationKeyDictionary valueForKey:@"messageFrom"];
+        
+        
+        //worklight 관련 강제 앱중지 방지를 위해 launchOptions 초기화
+        launchOptions = [[NSDictionary alloc]init];
+
+        
+    }
+    //앱이 완전 종료 후 푸쉬 받을때 - end
     
 
     //MQQ Connect try - start
@@ -71,9 +72,9 @@ static float JOBINTERVAL = 17.0f;
     
     
     
-//    [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(testP) userInfo:nil repeats:YES];
     
-
+//    [NSTimer scheduledTimerWithTimeInterval:15.0f target:self selector:@selector(testP2) userInfo:nil repeats:NO];
+    
     
     BOOL ret = [super application:application didFinishLaunchingWithOptions:launchOptions];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didFinishWLNativeInit:) name:@"didFinishWLNativeInit" object:nil];
@@ -83,7 +84,7 @@ static float JOBINTERVAL = 17.0f;
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:notiType];
     //APNS 처리 - end
     
-   return ret;
+    return ret;
 }
 
 
@@ -183,7 +184,7 @@ static float JOBINTERVAL = 17.0f;
 }
 
 
-- (void) testP{
+- (void) testP {
     
     NSString  *userID = [[Messenger sharedMessenger] userID];
     PushDataBase *pDB = [[PushDataBase alloc]init];
@@ -202,12 +203,9 @@ static float JOBINTERVAL = 17.0f;
         }
         
     }
-    
-    
 
     
 }
-
 
 
 /**
@@ -238,6 +236,8 @@ static float JOBINTERVAL = 17.0f;
 	if([result isEqualToString:@"hideViewToForeground"]){
 		[[self.viewController view] setHidden:NO];
 	}
+    
+    [self backgroundMQTTConection];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application 
@@ -309,6 +309,7 @@ static float JOBINTERVAL = 17.0f;
             NSLog(@"%s:%d ===== not Client => Connect try", __func__, __LINE__);
             [self mqttConn];
         }
+
     }
     
     NSLog(@"%s:%d ==== mqttConnectBackground - end", __func__, __LINE__);
@@ -329,8 +330,8 @@ static float JOBINTERVAL = 17.0f;
     
     [[Messenger sharedMessenger] connectWithHosts:servers ports:ports clientId:clientID cleanSession:FALSE];
     
-    [self mqttSubscribe];
-//    [NSTimer scheduledTimerWithTimeInterval:6.0f target:self selector:@selector(mqttSubscribe) userInfo:nil repeats:NO];
+//    [self mqttSubscribe];
+    [NSTimer scheduledTimerWithTimeInterval:6.0f target:self selector:@selector(mqttSubscribe) userInfo:nil repeats:NO];
     
 }
 
@@ -358,6 +359,18 @@ static float JOBINTERVAL = 17.0f;
                 [[Messenger sharedMessenger] subscribe:topic.topic qos:(int)2];
                 
             }
+            //개인 Notification용 -- start
+            NSMutableString *tmpTopic = [[NSMutableString alloc]init];
+            [tmpTopic appendFormat:@"/users/%@",userID];
+            NSString *baseTopic = tmpTopic;
+            
+            [[Messenger sharedMessenger] subscribe:baseTopic qos:(int)2];
+            //개인 Notification용 -- end
+            
+            // 전체 Notification용 - start
+            [[Messenger sharedMessenger] subscribe:@"/users" qos:(int)2];
+            // 전체 Notification용 - end
+            
         }
         //기존 subscribe 에 없으면  DB를 읽어 추가 -end
         
@@ -564,7 +577,9 @@ static float JOBINTERVAL = 17.0f;
                 if ([mClient isConnected]) {
                     // SUBSCRIBE
                     //개인 Notification용 -- start
-                    [[Messenger sharedMessenger] subscribe:job.topic qos:(int)2];
+                    NSMutableString *tmpUser = [[NSMutableString alloc]init];
+                    [tmpUser appendFormat:@"/users/%@",userID];
+                    [[Messenger sharedMessenger] subscribe:tmpUser qos:(int)2];
                     //개인 Notification용 -- end
                     
                     // 전체 Notification용 - start

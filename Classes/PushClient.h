@@ -9,6 +9,7 @@
 
 @interface MyAppDelegate : WLCordovaAppDelegate {
 
+
 }
 
 @end

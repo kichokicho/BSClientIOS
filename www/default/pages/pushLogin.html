@@ -1,0 +1,87 @@
+<link rel="stylesheet" href="font-awesome-4.1.0/css/font-awesome.css">
+<style type="text/css">
+
+
+.bsmobileLoginTitle {
+	font-size: x-large;
+	font-family: inherit;
+	color: deepskyblue;
+	width: 100%;
+}
+
+#loginbtn {
+	border: 1px solid deepskyblue;
+	width: 71%;
+	background-color: white;
+	color: deepskyblue;
+	height: 25px;
+	margin-top: 10%;
+}
+
+.passi {
+	color: deepskyblue;
+	margin-left: -65%;
+}
+
+.idi {
+	color: deepskyblue;
+	margin-left: -65%;
+}
+
+#loginPass {
+	width: 70%;
+	height: 25px;
+	border: 1px solid deepskyblue;
+	color: deepskyblue;
+}
+
+#loginId {
+	width: 70%;
+	height: 25px;
+	border: 1px solid deepskyblue;
+	color: deepskyblue;
+}
+
+.rowlogin {
+	width: 100%;
+	text-align: center;
+}
+
+::-webkit-input-placeholder { /* WebKit browsers */
+	color: antiquewhite;
+}
+
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+	color: antiquewhite;
+	opacity: 1;
+}
+
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+	color: antiquewhite;
+	opacity: 1;
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+	color: antiquewhite;
+}
+</style>
+
+
+
+<div class="rowlogin">
+	<br /> <br /> <br /> <br /> <br /> <br /> <br />
+	<div class="bsmobileLoginTitle">Members Login</div>
+	<br />
+
+	<div class="loginForm">
+		<label><i class="fa fa-user fa-2x idi"></i><br /></label> <input
+			type="text" name="" id="loginId" value="" placeholder="User Id"></input>
+		<br /> <label class="lockLable"><i
+			class="fa fa-lock fa-2x passi"></i><br /></label> <input type="password"
+			name="" id="loginPass" value="" placeholder="User Pass"></input><br />
+		<input type="button" name="" id="loginbtn" value="SIGN IN" onclick="javascript:loginFunction();"></input>
+	</div>
+</div>
+<script type="text/javascript" src="js/pages/pushLogin.js"></script>
+
+

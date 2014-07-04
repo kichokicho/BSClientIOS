@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "MqttOCClient.h"
+#import "PushDataBase.h"
 
 @interface Messenger : NSObject {
     MqttClient *client;
@@ -16,6 +17,7 @@
 @property (nonatomic, retain) MqttClient *client;
 @property (nonatomic, retain) NSString *clientID;
 @property (nonatomic, retain) NSString *userID;
+@property PushDataBase *pDB;
 @property NSMutableArray *logMessages;
 @property NSMutableArray *subscriptionData;
 

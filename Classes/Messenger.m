@@ -11,7 +11,6 @@
 #import "LogMessage.h"
 #import "Subscription.h"
 #import "MappingJson.h"
-#import "PushDataBase.h"
 #import "MessageBean.h"
 #import "JsonUtil.h"
 
@@ -128,7 +127,8 @@
     NSString *userid = [[Messenger sharedMessenger] userID];
     MessageBean *messageBean = [mJson messageToObjectMapping:payload userID:userid];
     NSMutableString *tmpMS = [[NSMutableString alloc]init];
-    PushDataBase *pDB = [[PushDataBase alloc]init];
+//    PushDataBase *pDB = [[PushDataBase alloc]init];
+    PushDataBase *pDB = [[Messenger sharedMessenger] pDB];
     JobBean *job = [[JobBean alloc]init];
     NSDictionary *pushInfo;
     UILocalNotification *localNotif = [[UILocalNotification alloc] init];
@@ -267,6 +267,7 @@
         self.client = [MqttClient alloc];
         self.clientID = nil;
         self.userID = nil;
+        self.pDB = [[PushDataBase alloc]init];
         self.client.callbacks = [[GeneralCallbacks alloc] init];
         self.logMessages = [[NSMutableArray alloc] init];
         self.SubscriptionData = [[NSMutableArray alloc] init];

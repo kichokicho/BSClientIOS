@@ -42,11 +42,11 @@ static float JOBINTERVAL = 17.0f;
             NSLog(@"allValues : %@",[allValues objectAtIndex:i]);
         }
         
-        NSDictionary *remoteNotificationKeyDictionary = [launchOptions valueForKey:@"UIApplicationLaunchOptionsRemoteNotificationKey"];
-        NSDictionary *apsDictionary = [remoteNotificationKeyDictionary valueForKey:@"aps"];
-        
-        NSString *message = [apsDictionary objectForKey:@"alert"];
-        NSString *messageForm = [remoteNotificationKeyDictionary valueForKey:@"messageFrom"];
+//        NSDictionary *remoteNotificationKeyDictionary = [launchOptions valueForKey:@"UIApplicationLaunchOptionsRemoteNotificationKey"];
+//        NSDictionary *apsDictionary = [remoteNotificationKeyDictionary valueForKey:@"aps"];
+//        
+//        NSString *message = [apsDictionary objectForKey:@"alert"];
+//        NSString *messageForm = [remoteNotificationKeyDictionary valueForKey:@"messageFrom"];
         
         
         //worklight 관련 강제 앱중지 방지를 위해 launchOptions 초기화
@@ -90,9 +90,10 @@ static float JOBINTERVAL = 17.0f;
 
 - (void) application:(UIApplication *) application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)apnsToken {
     NSLog(@"%s:%d Success - DeviceToken : %@", __func__, __LINE__, apnsToken);
-    
-    PushDataBase *pDataBase = [[PushDataBase alloc] init];
-    NSString *tapnsToken = [pDataBase getAPNSToken];
+
+    PushDataBase *pDB = [[Messenger sharedMessenger] pDB];
+//    PushDataBase *pDataBase = [[PushDataBase alloc] init];
+    NSString *tapnsToken = [pDB getAPNSToken];
     
 //    NSLog(@"%s:%d ==== tapnsToken : %@", __func__, __LINE__, tapnsToken);
     
@@ -106,7 +107,7 @@ static float JOBINTERVAL = 17.0f;
         
         NSLog(@"%s:%d ==== tapnsToken insert : %@", __func__, __LINE__, aToken);
         
-        [pDataBase insertAPNSToken:aToken];
+        [pDB insertAPNSToken:aToken];
         
     }else {
         NSLog(@"%s:%d ====  기존 apnsToken 있음", __func__, __LINE__);
@@ -187,7 +188,8 @@ static float JOBINTERVAL = 17.0f;
 - (void) testP {
     
     NSString  *userID = [[Messenger sharedMessenger] userID];
-    PushDataBase *pDB = [[PushDataBase alloc]init];
+    PushDataBase *pDB = [[Messenger sharedMessenger] pDB];
+//    PushDataBase *pDB = [[PushDataBase alloc]init];
     NSArray  *topicList = [pDB getTopicList:userID];
     
     NSArray *test = [[Messenger sharedMessenger] subscriptionData];
@@ -340,7 +342,8 @@ static float JOBINTERVAL = 17.0f;
 
     
     NSString  *userID = [[Messenger sharedMessenger] userID];
-    PushDataBase *pDB = [[PushDataBase alloc]init];
+    PushDataBase *pDB = [[Messenger sharedMessenger] pDB];
+//    PushDataBase *pDB = [[PushDataBase alloc]init];
     NSArray  *topicList = [pDB getTopicList:userID];
     TopicBean *topic = [[TopicBean alloc]init];
     
@@ -427,7 +430,8 @@ static float JOBINTERVAL = 17.0f;
 
 - (void) userRead {
     
-    PushDataBase *pDB = [[PushDataBase alloc]init];
+    PushDataBase *pDB = [[Messenger sharedMessenger] pDB];
+//    PushDataBase *pDB = [[PushDataBase alloc]init];
     
     UserBean *user = [pDB getUser];
     
@@ -491,8 +495,8 @@ static float JOBINTERVAL = 17.0f;
 -(void)backgroundJob {
     
 //    [self testP];
-    
-    PushDataBase *pDB = [[PushDataBase alloc]init];
+    PushDataBase *pDB = [[Messenger sharedMessenger] pDB];
+//    PushDataBase *pDB = [[PushDataBase alloc]init];
     
     NSString  *userID = [[Messenger sharedMessenger] userID];
     NSArray *jobList = [pDB getJobList];

@@ -1,118 +1,59 @@
+
 <style type="text/css">
-.rs-left,.rs-right {
-	display: none
-}
-
-.rs-main {
-	background-color: white;
-	box-shadow: 0 0 20px rgba(0, 0, 0, .6); /* 안쪽 그림자 크기, 색상 수정 */
-	-webkit-box-shadow: 0 0 20px rgba(0, 0, 0, .6) /* 안쪽 그림자 크기, 색상 수정 */
-}
-
-.rs-main .rs-title {
-	background: white
-}
-
-
-
-
-.rs-content {
-	position: absolute;
-	top: 45px;
-	bottom: 48px;
-	left: 0;
-	width: 100%;
-	background: white;
-	
-}
-
-
-	   
-							    
-
-.rs-main h2 {
-	height: 30px;
-	background: url(../asset/img/bg.png) repeat-x 0 -85px;
-	font-size: .93em;
-	line-height: 30px;
-	color: #FFF;
-	text-align: center
-}
-
-i {
-	color: deepskyblue;
-}
-
-.rs-title {
-	position: relative;
-	width: 100%;
-	padding: 10px 0;
-	background: #777;
-	text-align: center;
-	white-space: nowrap;
-	text-overflow: ellipsis
-}
-
-/*footer....start*/
-.rs-footer {
-	position: fixed;
-	background-color: blue;
-	left: 0px;
-	bottom: 0px;
-	height: 30px;
-	width: 100%;
-	background: #999;
-}
-
-.bsMobileMessage {
-	font: -webkit-mini-control;
-	color: deepskyblue;
-	font-size: x-large;
-}
-
 .bsMobileMessageI {
 	float: left;
 	margin-left: 15px;
+	color: deepskyblue;
 }
-/*footer....end*/
+.deleteOffButton{
+	float: right;
+	margin-right: 10px;
+	color: deepskyblue;
+}
+
+
+.deleteOnButton{
+	float: right;
+	margin-right: 10px;
+	color: deepskyblue;
+}
+
+.fa-envelope{
+color: deepskyblue;
+} 
+
 </style>
+<link rel="stylesheet" href="css/detail_reset.css"> <!-- CSS reset -->
+<link rel="stylesheet" href="css/detail_style.css"> <!-- Resource style -->
+<script src="js/modernizr.js"></script> <!-- Modernizr -->
 
 
-<!--@code title="HTML"-->
-<div class="rs-body">
-
-	<div class="rs-left">
-		<!-- header -->
-		<div class="rs-header rs-title" position="fixed"></div>
-		<div class="rs-content"></div>
-		<div class="rs-footer rs-title"></div>
-	</div>
-
-	<div class="rs-main">
-		<div class="rs-title">
-			<i class="fa fa-envelope-o fa-2x"></i>
-		</div>
-		<div class="rs-content">
-		
-		</div>
-		<div class="rs-footer rs-title">
-			<span class="bsMobileMessageI" onclick="javascript:backButton();"><i
-				class="fa fa-arrow-circle-left fa-2x"></i></span><span
-				class="bsMobileMessage">BS Mobile Message</span>
-		</div>
 
 
-	</div>
-	<div class="rs-right">
-		<!-- header -->
-		<div class="rs-header rs-title" position="fixed"></div>
-		<div class="rs-content"></div>
-		<div class="rs-footer rs-title"></div>
-	</div>
-</div>
+
+
+
+
+
+
+
+
+    <header>
+    <br/>
+		<span class="bsMobileMessageI" onclick="javascript:backButton();"><i
+				class="fa fa-arrow-circle-left fa-2x"></i></span>
+			<i class="fa fa-envelope fa-2x"></i>
+			<span class="deleteOffButton"><a onclick="javascript:deleteButtonOffFuncton()"><i  style="color:deepskyblue;" class="fa fa-check-square-o fa-2x"></i></a></span>
+			<span class="deleteOnButton" style="display: none; "><a onclick="javascript:deleteSelectOnFuncton()"><i  style="color:deepskyblue;" class="fa fa-trash-o fa-2x"></i></a></span>
+	</header>
+
+	<section id="cd-timeline" class="cd-container">
+
+	</section> 
+
 
 <script type="text/javascript" src="js/pages/pushDetail.js"></script>
-
+<script type="text/javascript" src="js/pages/timeMain.js"></script>
 
 
 

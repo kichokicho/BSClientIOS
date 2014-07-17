@@ -84,18 +84,20 @@ static float JOBINTERVAL = 17.0f;
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:notiType];
     //APNS 처리 - end
     
+//    [self testP];
+    
     return ret;
 }
 
 
 - (void) application:(UIApplication *) application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)apnsToken {
-    NSLog(@"%s:%d Success - DeviceToken : %@", __func__, __LINE__, apnsToken);
+    NSLog(@"Success - DeviceToken : %@", apnsToken);
 
     PushDataBase *pDB = [[Messenger sharedMessenger] pDB];
 //    PushDataBase *pDataBase = [[PushDataBase alloc] init];
     NSString *tapnsToken = [pDB getAPNSToken];
     
-//    NSLog(@"%s:%d ==== tapnsToken : %@", __func__, __LINE__, tapnsToken);
+//    NSLog(@"==== tapnsToken : %@", tapnsToken);
     
     if (tapnsToken == NULL) {
         
@@ -105,12 +107,12 @@ static float JOBINTERVAL = 17.0f;
                              stringByReplacingOccurrencesOfString:@">" withString:@""]
                             stringByReplacingOccurrencesOfString: @" " withString: @""];
         
-        NSLog(@"%s:%d ==== tapnsToken insert : %@", __func__, __LINE__, aToken);
+        NSLog(@"==== tapnsToken insert : %@", aToken);
         
         [pDB insertAPNSToken:aToken];
         
     }else {
-        NSLog(@"%s:%d ====  기존 apnsToken 있음", __func__, __LINE__);
+        NSLog(@"====  기존 apnsToken 있음");
     }
     
     
@@ -119,16 +121,16 @@ static float JOBINTERVAL = 17.0f;
 }
 
 - (void) application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error{
-    NSLog(@"%s:%d Fail - Error : %@", __func__, __LINE__, error);
+    NSLog(@"Fail - Error : %@", error);
 }
 
 - (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    NSLog(@"%s:%d ------didReceiveRemoteNotification", __func__, __LINE__);
+    NSLog(@"------didReceiveRemoteNotification");
     
     NSDictionary *apsDictionary = [userInfo valueForKey:@"aps"];
     
     NSString *badge = [apsDictionary objectForKey:@"badge"];
-    NSLog(@"%s:%d Badge : %@", __func__, __LINE__, badge);
+    NSLog(@"Badge : %@", badge);
     if (badge != nil) {
         application.applicationIconBadgeNumber = [badge integerValue];
         
@@ -157,21 +159,32 @@ static float JOBINTERVAL = 17.0f;
 
 - (void) application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
     //    NSDictionary *userInfo = notification.userInfo;
-    NSString *alertBody = notification.alertBody;
-    NSDictionary *pushInfo = notification.userInfo;
-    NSLog(@"%s:%d ==== local noti TEst : %@", __func__, __LINE__,alertBody);
-    NSString *contentTitle = [pushInfo objectForKey:@"contentTitle"];
-    NSString *contentText = [pushInfo objectForKey:@"contentText"];
+//    NSString *alertBody = notification.alertBody;
+//    NSDictionary *pushInfo = notification.userInfo;
+//    NSLog(@"==== local noti TEst : %@",alertBody);
+//    NSString *contentTitle = [pushInfo objectForKey:@"contentTitle"];
+//    NSString *contentText = [pushInfo objectForKey:@"contentText"];
     
-    [self PushProcess:contentText andMessageForm:contentTitle];
+//    [self PushProcess:contentText andMessageForm:contentTitle];
     //    NSString *action = [userInfo objectForKey:@"action1"];
     
+    [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(javascriptCall) userInfo:nil repeats:NO];
+    
+    
 }
+
+- (void) javascriptCall {
+    UIWebView * pWebView = [[Messenger sharedMessenger]pWebView];
+    [pWebView stringByEvaluatingJavaScriptFromString:@"test()"];
+    
+}
+
+
 
 // APNS Alert 처리
 - (void)PushProcess:(NSString *)message andMessageForm:(NSString *)messageForm {
     
-    NSLog(@"%s:%d Message : %@, form : %@", __func__, __LINE__, message, messageForm);
+    NSLog(@"Message : %@, form : %@", message, messageForm);
     if (message != nil) {
         UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:messageForm message:message delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil];
         [alertView show];
@@ -181,30 +194,30 @@ static float JOBINTERVAL = 17.0f;
     NSDateFormatter *dateFormat=[[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"yyyy-MM-dd hh:mm:ss:SS"];
     NSString *dateString = [dateFormat stringFromDate:now];
-    NSLog(@"%s:%d ======  NOW : %@", __func__, __LINE__, dateString);
+    NSLog(@"======  NOW : %@", dateString);
 }
 
 
 - (void) testP {
     
-    NSString  *userID = [[Messenger sharedMessenger] userID];
+//    NSString  *userID = [[Messenger sharedMessenger] userID];
     PushDataBase *pDB = [[Messenger sharedMessenger] pDB];
 //    PushDataBase *pDB = [[PushDataBase alloc]init];
-    NSArray  *topicList = [pDB getTopicList:userID];
+//    NSArray  *topicList = [pDB getTopicList:userID];
+//    
+//    NSArray *test = [[Messenger sharedMessenger] subscriptionData];
     
-    NSArray *test = [[Messenger sharedMessenger] subscriptionData];
+     [pDB getMessageList];
     
-    
-    
-    if (topicList.count > 0) {
-        NSLog(@"%s:%d ===== tesPr2 : %lu", __func__, __LINE__,(unsigned long)test.count);
-        
-        for (int i=0 ; i < topicList.count; i++) {
-            Subscription *obj = [test objectAtIndex:i];
-            NSLog(@"%s:%d ===== Topic %d : %@", __func__, __LINE__,i, obj.topicFilter);
-        }
-        
-    }
+//    if (topicList.count > 0) {
+//        NSLog(@"===== tesPr2 : %lu",(unsigned long)test.count);
+//        
+//        for (int i=0 ; i < topicList.count; i++) {
+//            Subscription *obj = [test objectAtIndex:i];
+//            NSLog(@"===== Topic %d : %@",i, obj.topicFilter);
+//        }
+//        
+//    }
 
     
 }
@@ -226,7 +239,10 @@ static float JOBINTERVAL = 17.0f;
 */
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-	NSString *result = [super.viewController.webView stringByEvaluatingJavaScriptFromString:@"WL.App.BackgroundHandler.onAppEnteringBackground();"]; 
+    NSLog(@"Background로 인해 클라이언트를종료합니다.");
+    [[Messenger sharedMessenger] disconnectWithTimeout:1];
+    
+	NSString *result = [super.viewController.webView stringByEvaluatingJavaScriptFromString:@"WL.App.BackgroundHandler.onAppEnteringBackground();"];
 	if([result isEqualToString:@"hideView"]){
 		[[self.viewController view] setHidden:YES];
 	}
@@ -290,7 +306,7 @@ static float JOBINTERVAL = 17.0f;
 
 
 - (void) backgroundMQTTConection{
-    NSLog(@"%s:%d === mqttConnectBackground - start", __func__, __LINE__);
+    NSLog(@"=== mqttConnectBackground - start");
     
     
     
@@ -305,16 +321,16 @@ static float JOBINTERVAL = 17.0f;
         
         if ([mClient isConnected]) {
             
-            NSLog(@"%s:%d ===== MQTT Connected", __func__, __LINE__);
+            NSLog(@"===== MQTT Connected");
             
         } else {
-            NSLog(@"%s:%d ===== not Client => Connect try", __func__, __LINE__);
+            NSLog(@"===== not Client => Connect try");
             [self mqttConn];
         }
 
     }
     
-    NSLog(@"%s:%d ==== mqttConnectBackground - end", __func__, __LINE__);
+    NSLog(@"==== mqttConnectBackground - end");
     
     //    [[Messenger sharedMessenger] disconnectWithTimeout:10];
 }
@@ -323,10 +339,10 @@ static float JOBINTERVAL = 17.0f;
 //MQTT connection
 - (void) mqttConn {
     
-    NSLog(@"%s:%d ===== mqttConn - start ", __func__, __LINE__);
+    NSLog(@"===== mqttConn - start ");
     
     NSArray *servers = [[NSArray alloc] initWithObjects:@"adflow.net", nil];
-    NSArray *ports = [[NSArray alloc] initWithObjects:@"1883", nil];
+    NSArray *ports = [[NSArray alloc] initWithObjects:@"8883", nil];
     NSString  *clientID = [[Messenger sharedMessenger] clientID];
     //    clientID = @"test12345";
     
@@ -385,7 +401,7 @@ static float JOBINTERVAL = 17.0f;
         
         if ([mClient isConnected]) {
             
-            NSLog(@"%s:%d ===== mqttSubscribe MQTT Connected", __func__, __LINE__);
+            NSLog(@"===== mqttSubscribe MQTT Connected");
             //개인 Notification용 -- start
             NSMutableString *tmpTopic = [[NSMutableString alloc]init];
             [tmpTopic appendFormat:@"/users/%@",userID];
@@ -405,7 +421,7 @@ static float JOBINTERVAL = 17.0f;
             // 그룹정보동기화요청 - end
             
         } else {
-            NSLog(@"%s:%d ===== mqttSubscribe not Client", __func__, __LINE__);
+            NSLog(@"===== mqttSubscribe not Client");
             //Base(개인,전체) Notification용  Job 추가-- start
             NSMutableString *tmpTopic = [[NSMutableString alloc]init];
             [tmpTopic appendFormat:@"/users/%@",userID];
@@ -441,13 +457,13 @@ static float JOBINTERVAL = 17.0f;
         
         if (clientID != nil) {
             if (!([clientID isEqual:user.tokenid])) {
-                NSLog(@"%s:%d 토큰이변경되었습니다.", __func__, __LINE__);
+                NSLog(@"토큰이변경되었습니다.");
                 
                 MqttClient *mClient = [[Messenger sharedMessenger] client];
                 
                 if ([mClient isConnected]) {
                     
-                    NSLog(@"%s:%d 클라이언트를종료합니다.", __func__, __LINE__);
+                    NSLog(@"클라이언트를종료합니다.");
                     [[Messenger sharedMessenger] disconnectWithTimeout:5];
                     
                     //다시 연결 시도.
@@ -456,7 +472,7 @@ static float JOBINTERVAL = 17.0f;
 
                 }
                 
-                NSLog(@"%s:%d ===== mqttSubscribe not Client", __func__, __LINE__);
+                NSLog(@"===== mqttSubscribe not Client");
                 //Base(개인,전체) Notification용  Job 추가-- start
                 NSMutableString *tmpTopic = [[NSMutableString alloc]init];
                 [tmpTopic appendFormat:@"/users/%@",user.userid];
@@ -479,7 +495,7 @@ static float JOBINTERVAL = 17.0f;
         
         
     }else{
-        NSLog(@"%s:%d 토큰 or 유저아이디가없습니다.", __func__, __LINE__);
+        NSLog(@"토큰 or 유저아이디가없습니다.");
         
         UserBean *userB = [[UserBean alloc]init];
         [userB setUserid:@"1731124"];
@@ -494,6 +510,7 @@ static float JOBINTERVAL = 17.0f;
 
 -(void)backgroundJob {
     
+    NSLog(@"backgroundJob - Start");
 //    [self testP];
     PushDataBase *pDB = [[Messenger sharedMessenger] pDB];
 //    PushDataBase *pDB = [[PushDataBase alloc]init];
@@ -506,12 +523,14 @@ static float JOBINTERVAL = 17.0f;
     NSMutableArray *subscribeList = [[Messenger sharedMessenger] subscriptionData];
     Subscription *tSub;
     MqttClient *mClient = [[Messenger sharedMessenger] client];
+    int resultCode;
     
     
     for (int i=0; i < jobList.count; i++) {
         job = [jobList objectAtIndex:i];
+        resultCode = 0;
         
-        NSLog(@"%s:%d Message List : %d, %d, %@, %@", __func__, __LINE__, job.id,job.type,job.topic,job.content);
+        NSLog(@"Message List : %d, %d, %@, %@", job.id,job.type,job.topic,job.content);
         
         switch (job.type) {
             case 0:
@@ -519,11 +538,11 @@ static float JOBINTERVAL = 17.0f;
                 if ([mClient isConnected]) {
                     //PUBLISH
                     [[Messenger sharedMessenger] publish:job.topic payload:job.content qos:2 retained:FALSE];
-                    NSLog(@"%s:%d 메시지를전송하였습니다. 메시지=%@", __func__, __LINE__,job.content);
+                    NSLog(@"메시지를전송하였습니다. 메시지=%@",job.content);
                     
                     // DB Job delete
                     [pDB deleteJob:job.id];
-                    NSLog(@"%s:%d 해당 Job을 삭제하였습니다. id=%d", __func__, __LINE__,job.id);
+                    NSLog(@"해당 Job을 삭제하였습니다. id=%d",job.id);
                 
                 }
             
@@ -539,17 +558,32 @@ static float JOBINTERVAL = 17.0f;
                     //Topic DB Insert
                     [topic setTopic:job.topic];
                     [topic setUserid:userID];
-                    [pDB insertTopic:topic];
+                    resultCode = [pDB insertTopic:topic];
                     
-                    //Subscribe Add
-                    tSub=[[Subscription alloc]init];
-                    [tSub setTopicFilter:job.topic];
-                    [tSub setQos:2];
-                    [subscribeList addObject:tSub];
                     
-                    // DB Job delete
-                    [pDB deleteJob:job.id];
-                    NSLog(@"%s:%d 해당 Job을 삭제하였습니다. id=%d", __func__, __LINE__,job.id);
+                    switch (resultCode) {
+                        case SQLITE_DONE:
+                            //Subscribe Add
+                            tSub=[[Subscription alloc]init];
+                            [tSub setTopicFilter:job.topic];
+                            [tSub setQos:2];
+                            [subscribeList addObject:tSub];
+
+                        case SQLITE_CONSTRAINT:
+                            // DB Job delete
+                            [pDB deleteJob:job.id];
+                            NSLog(@"해당 Job을 삭제하였습니다. id=%d",job.id);
+                            break;
+
+                        //SQLITE Error
+                        case 1000:
+                            NSLog(@"해당 Job이 실패하였습니다. id=%d",job.id);
+                            break;
+                            
+                        default:
+                            NSLog(@"resultCode가 유형이 없습니다. resultCode=%d",resultCode);
+                            break;
+                    }
                 
                 }
             
@@ -568,7 +602,7 @@ static float JOBINTERVAL = 17.0f;
                     
                     // DB Job delete
                     [pDB deleteJob:job.id];
-                    NSLog(@"%s:%d 해당 Job을 삭제하였습니다. id=%d", __func__, __LINE__,job.id);
+                    NSLog(@"해당 Job을 삭제하였습니다. id=%d",job.id);
                 
                 }
             
@@ -598,7 +632,7 @@ static float JOBINTERVAL = 17.0f;
                 
                     // DB Job delete
                     [pDB deleteJob:job.id];
-                    NSLog(@"%s:%d 해당 Job을 삭제하였습니다. id=%d", __func__, __LINE__,job.id);
+                    NSLog(@"해당 Job을 삭제하였습니다. id=%d",job.id);
                 
                 }
             

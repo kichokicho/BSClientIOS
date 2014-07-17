@@ -1,5 +1,3 @@
-
-/* JavaScript content from js/pages/pushLogin.js in folder common */
 //로그인 펑션
 function loginFunction() {
 	var formCheck = loginFormCheck();
@@ -7,18 +5,21 @@ function loginFunction() {
 	if (formCheck) {
 		var loginId = $('#loginId').val();
 		var loginPass = $('#loginPass').val();
+		
 		busy.show();
 		//ajax call server auth 
 		$
 		.ajax({
-			url : 'http://192.168.2.1:8080/v1/auth',
+			//https://210.108.94.90/pushAdmin/
+			url :'http://210.108.94.90/v1/auth',
+			//url : 'http://192.168.42.2:9090/v1/auth',
 			type : 'POST',
+			timeout: 10000,
 			contentType : "application/json",
 			dataType : 'json',
-			async : false,
+			async : true,
 			data : '{"userID":"' + loginId + '","password":"' + loginPass
-              '","password":"' + loginPass
-					+ '"}',
+					+ '","deviceID":"'+deviceID+'"}',
 			success : function(data) {
 				console.log('로그인 호출 성공');
 				var loginResult = data.result.success;
@@ -28,7 +29,12 @@ function loginFunction() {
 				console.log(data.result.success);
 				console.log('로그인 호출 결과값 끝!');
 				if (loginResult) {
-					console.log('로그인 리절트 이프!');
+					console.log('success start!');
+					
+					console.log(data.result.data);
+					console.log(data.result.errors);
+					console.log('success end...');
+					if(!data.result.errors){
 					var tokenID = data.result.data.tokenID;
 					currentTokenID=tokenID;
 					console.log('토큰 아이디');
@@ -37,11 +43,24 @@ function loginFunction() {
 					//sql lite 현재 유저가 있는지 검색
 					console.log('현재 유저가 있는지 검색!! start');
 					document.addEventListener("deviceready", nowLoginInfoSelect(loginId,loginPass,tokenID), false);
-						
+					}else{
+						busy.hide();
+						var dialogTitle="Token not found";
+						var dialogContent="로그인 정보가 일치 하지 않습니다!";
+						WL.SimpleDialog.show(dialogTitle, dialogContent, [ {
+						    text : '확인'
+						  }
+						  ]);
+					}
 				} else {
 					busy.hide();
-					console.log('로그인 리절트 엘스!');
-					
+					console.log('push server fail');
+					var dialogTitle="Push Server Error";
+					var dialogContent="로그인에 실패하였습니다.!";
+					WL.SimpleDialog.show(dialogTitle, dialogContent, [ {
+					    text : '확인'
+					  }
+					  ]);
 					
 				}
 
@@ -51,7 +70,7 @@ function loginFunction() {
 				console.log(data);
 				console.log(textStatus);
 				busy.hide();
-				var dialogTitle="로그인";
+				var dialogTitle="Server Error";
 				var dialogContent="로그인에 실패하였습니다.!";
 				WL.SimpleDialog.show(dialogTitle, dialogContent, [ {
 				    text : '확인'
@@ -187,7 +206,7 @@ function loginFuncionSelect() {
 		name : "PushDB"
 	});
 	db.transaction(function(tx) {
-	tx.executeSql("select * from message where type=0 order by id desc;",[],
+	tx.executeSql("select * from message  where type=0 or type=1 or type=2 or type=3 group by category order  by datetime(receivedate)  desc ;",[],
 				function(tx, res) {
 					var selectLength = res.rows.length;
 					var htmlTagli="";
@@ -200,11 +219,18 @@ function loginFuncionSelect() {
 									
 					for (var i = 0; i < selectLength; i++) {
 							var contentResult = res.rows.item(i).content;
+							console.log('그룹바이 리절트 시작');
+							console.log(contentResult);
+							console.log('그룹바이 리절트 끝');
 							var notiID = res.rows.item(i).id;
 							var receivedate=res.rows.item(i).receivedate;
 							console.log('메세지수신날짜');
 							console.log(receivedate);
 							console.log('메세지수신날짜');
+							var category=res.rows.item(i).category;
+							console.log('카테고리시작 ');
+							console.log(category);
+							console.log('카테고리 끝');
 							var subReceive=receivedate.substring(0,10);
 							var subnowDate=nowDataResult.substring(0, 10);
 							if(subReceive==subnowDate){
@@ -227,13 +253,30 @@ function loginFuncionSelect() {
 							     	  contentText=contentText.substring(0, 18);
 								      contentText=contentText.concat('...');
 							    }
-					
-							htmlTagli=htmlTagli.concat('<li class="scl_o"><p class="scl_tmb"><br /> <a href="#" onclick="javascript:pushListDelete('+notiID+');"><i class="fa fa-trash-o fa-2x"></i></a></p><a a href="#" onclick="javascript:pushLishClick('+notiID+');"><p class="scl_cnt"><span class="scl_messageTitle">'
-									+ contentResult.notification.contentTitle
-									+ '</span><br> <span class="scl_textContent">'
-									+ contentText
-									+ '</span> <span class="scl_date" id="'+notiID+'">'+receivedate+'</span></p></a></li>');
-				        }    
+								 var newItag="";
+									if(res.rows.item(i).read==1){
+										
+									newItag='style="display: none;"';
+									
+									}else{
+										newItag='';
+									}
+									
+									console.log("htmlstart");
+									console.log(newItag);
+									console.log("htmlend");
+								 
+								htmlTagli=htmlTagli.concat('<li class="scl_o"><p class="scl_tmb"><br /> </p><a id="'+category+'" href="#" onclick="javascript:pushLishClick(this.id);"><p class="scl_cnt"><span class="scl_messageTitle">'
+										+ category
+										+ '</span><br> <span class="scl_textContent">'
+										+ contentText
+										+ '</span><span class="scl_date" id="'+category+'">'+receivedate+'&nbsp;&nbsp;<i '+newItag+' class="fa fa-comment fa-2x"></i></span></p></a></li>');
+					                       
+								
+					}
+					console.log("완성된 html start");
+					console.log(htmlTagli);
+					console.log("완성된 html end");
 					$(".ul_pushList").html(htmlTagli);
 					oScroll.refresh();
 					console.log('메세지 리스트 셀렉트 받아오기끝');

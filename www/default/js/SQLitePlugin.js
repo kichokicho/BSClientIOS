@@ -1,5 +1,3 @@
-
-/* JavaScript content from js/SQLitePlugin.js in folder common */
 (function() {
   var SQLiteFactory, SQLitePlugin, SQLitePluginCallback, SQLitePluginTransaction, pcb, root;
 

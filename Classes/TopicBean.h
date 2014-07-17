@@ -10,8 +10,8 @@
 
 @interface TopicBean : NSObject
 
-@property NSString *userid;
-@property NSString *topic;
+@property (nonatomic, retain) NSString *userid;
+@property (nonatomic, retain) NSString *topic;
 @property int subscribe;
 
 @end

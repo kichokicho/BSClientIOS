@@ -30,7 +30,7 @@
 - (NSArray *) getJobList;
 - (void) insertJob:(JobBean *)job;
 - (NSArray *) getTopicList:(NSString *)userid;
-- (void) insertTopic:(TopicBean *)topic;
+- (int) insertTopic:(TopicBean *)topic;
 - (UserBean *) getUser;
 - (void) insertUser:(UserBean *)user;
 

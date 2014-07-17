@@ -16,5 +16,7 @@
 @synthesize type;
 @synthesize content;
 @synthesize receivedate;
+@synthesize read;
+@synthesize category;
 
 @end

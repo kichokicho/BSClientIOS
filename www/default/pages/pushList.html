@@ -8,6 +8,13 @@
 .rs-left,.rs-right {
 	display: none
 }
+.rs-left {
+	background-color: white;
+	
+}
+
+
+
 
 .rs-main {
  	background-color: white; 
@@ -25,7 +32,8 @@
 	padding: 10px 0;
 	text-align: center;
 	white-space: nowrap;
-	text-overflow: ellipsis
+	text-overflow: ellipsis;
+	display: block;
 }
 
 i {
@@ -122,7 +130,6 @@ a,u {
 .scl_date {
 	font-size: small;
 	float: right;
-	padding-right: 10px;
 	color: #1172b6;
 }
 
@@ -155,9 +162,28 @@ a,u {
 	float: left;
 	margin-left: 15px;
 }
+.deleteOffButton{
+	float: right;
+	margin-right: 10px;
+}
 
 
+.deleteOnButton{
+	float: right;
+	margin-right: 10px;
+}
 
+ .fa-comment{
+ 	color: #1172b6;
+ 	
+ }
+
+
+.fa-envelope{
+
+margin-left: -32px;
+
+}
 
 /*footer....end*/
 </style>
@@ -168,33 +194,39 @@ a,u {
 	<div class="rs-left">
 		<!-- header -->
 		<div class="rs-title" position="fixed">
-			<i class="fa fa-wrench fa-2x"></i>
+			<i style="color:deepskyblue;" class="fa fa-wrench fa-2x"></i>
+			
 		</div>
 		<div class="rs-content">
 			<div class="div_login rsRowcontent">
-				<i class="fa fa-user fa-2x"></i> <span>로그인 정보</span>
+				<i style="color:deepskyblue;" class="fa fa-user fa-2x"></i> <span style="color:deepskyblue;">로그인 정보</span>
 			</div>
 			<div class="div_tokenInfo rsRowcontent">
-				<i class="fa fa-key fa-2x"></i> <span>토큰 정보</span>
+				<i style="color:deepskyblue;" class="fa fa-key fa-2x"></i> <span style="color:deepskyblue;">토큰 정보</span>
 			</div>
 			<div class="div_groupInfo rsRowcontent">
-				<i class="fa fa-group fa-2x"></i> <span>소속된 메세지  그룹</span>
+				<i  style="color:deepskyblue;" class="fa fa-group fa-2x"></i> <span style="color:deepskyblue;">소속된 메세지  그룹</span>
 			</div>
 			<div class="div_groupSync rsRowcontent">
-				<i class="fa fa-repeat fa-2x"></i> <span>메세지 그룹 동기화</span>
+				<i style="color:deepskyblue;"  class="fa fa-repeat fa-2x"></i> <span style="color:deepskyblue;">메세지 그룹 동기화</span>
 			</div>
 			<div class="div_deleteAllMessage rsRowcontent">
-				<i class="fa fa-trash-o fa-2x"></i><span>전체 메세지 삭제</span>
+				<i  style="color:deepskyblue;" class="fa fa-trash-o fa-2x"></i><span style="color:deepskyblue;">전체 메세지 삭제</span>
 			</div>
 			<div class="div_logout rsRowcontent">
-				<i class="fa fa-reply fa-2x"></i><span>로그 아웃</span>
+				<i  style="color:deepskyblue;" class="fa fa-reply fa-2x"></i><span style="color:deepskyblue;">로그 아웃</span>
 			</div>
 		</div>
 		
 	</div>
 	<div class="rs-main">
 		<div class="rs-title">
+		<span class="bsMobileMessageI" 
+ 				onclick="oRevealSidebarUI.toggleSlide()"><i
+ 				class="fa fa-cog fa-2x"></i></span>
 			<i class="fa fa-envelope fa-2x"></i>
+<!-- 			<span class="deleteOffButton"><a onclick="javascript:deleteButtonOffFuncton()"><i class="fa fa-check-square-o fa-2x"></i></a></span> -->
+<!-- 			<span class="deleteOnButton" style="display: none;"><a onclick="javascript:deleteSelectOnFuncton()"><i class="fa fa-trash-o fa-2x"></i></a></span> -->
 		</div>
 		<div class="rs-content">
 			<div id="scrollWrapper">
@@ -370,12 +402,12 @@ a,u {
 				<!-- // Scroller -->
 			</div>
 		</div>
-		<div class="rs-footer rs-title">
-			<span class="bsMobileMessageI"
-				onclick="oRevealSidebarUI.toggleSlide()"><i
-				class="fa fa-cog fa-2x"></i></span><span class="bsMobileMessage">BS
-				Mobile Message</span>
-		</div>
+<!-- 		<div class="rs-footer rs-title"> -->
+<!-- 			<span class="bsMobileMessageI" -->
+<!-- 				onclick="oRevealSidebarUI.toggleSlide()"><i -->
+<!-- 				class="fa fa-cog fa-2x"></i></span><span class="bsMobileMessage">BS -->
+<!-- 				Mobile Message</span> -->
+<!-- 		</div> -->
 
 
 	</div>
@@ -387,7 +419,7 @@ a,u {
 </div>
 
 <script type="text/javascript" src="js/pages/pushList.js"></script>
-<script type="text/javascript" src="js/jquery-1.10.2.js"></script>
+
 	       
 
 

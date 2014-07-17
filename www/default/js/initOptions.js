@@ -1,5 +1,3 @@
-
-/* JavaScript content from js/initOptions.js in folder common */
 // Uncomment the initialization options as required. For advanced initialization options please refer to IBM Worklight Information Center 
 
 var wlInitOptions = {
@@ -100,13 +98,23 @@ window.busy = new WL.BusyIndicator();
 //pageHistory!!
 var pagesHistory = [];
 
+
+
 //currentUserCheck
 var currentLoginID;
 var currentTokenID;
 
+var deviceID;
+
+
+
 document.addEventListener("deviceready", loginCheck, false);
 
 function loginCheck() {
+	console.log('디바이스 아이디 ');
+	deviceID=device.uuid;
+	console.log(deviceID);
+	console.log('디바이스 아이디 끝');
 	var db = window.sqlitePlugin.openDatabase({
 		name : "PushDB"
 	});
@@ -172,6 +180,10 @@ else if (window.attachEvent)
 else
 	window.onload = pushListJSAtOnload;
 
+function utf8_to_b64(str) {
+	return window.btoa(unescape(encodeURIComponent(str)));
+}
+
 function b64_to_utf8(str) {
 	return decodeURIComponent(escape(window.atob(str)));
 }
@@ -205,7 +217,9 @@ function loginPushListSelect(){
 		name : "PushDB"
 	});
 	db.transaction(function(tx) {
-		tx.executeSql("select * from message where type=0 order by id desc;",[],
+		//order  by date(receivedate) DESC		Limit 1
+		//select *  from Table order  by date(dateColumn) DESC
+		tx.executeSql("select * from message where type=0 or type=1 or type=2 or type=3 group by category order  by datetime(receivedate) desc ;",[],
 					function(tx, res) {
 						var selectLength = res.rows.length;
 						var htmlTagli="";
@@ -218,8 +232,15 @@ function loginPushListSelect(){
 										
 						for (var i = 0; i < selectLength; i++) {
 								var contentResult = res.rows.item(i).content;
+								console.log('그룹바이 리절트 시작');
+								console.log(contentResult);
+								console.log('그룹바이 리절트 끝');
 								var notiID = res.rows.item(i).id;
 								var receivedate=res.rows.item(i).receivedate;
+								var category=res.rows.item(i).category;
+								console.log('카테고리시작 ');
+								console.log(category);
+								console.log('카테고리 끝');
 								console.log('메세지수신날짜');
 								console.log(receivedate);
 								console.log('메세지수신날짜');
@@ -245,14 +266,32 @@ function loginPushListSelect(){
 								     	contentText=contentText.substring(0, 18);
 									    contentText=contentText.concat('...');
 								  }
-						
-								htmlTagli=htmlTagli.concat('<li class="scl_o"><p class="scl_tmb"><br /> <a href="#" onclick="javascript:pushListDelete('+notiID+');"><i class="fa fa-trash-o fa-2x"></i></a></p><a a href="#" onclick="javascript:pushLishClick('+notiID+');"><p class="scl_cnt"><span class="scl_messageTitle">'
-										+ contentResult.notification.contentTitle
+								 var newItag="";
+									if(res.rows.item(i).read==1){
+										
+									newItag='style="display: none;"';
+									
+									}else{
+										newItag='';
+									}
+									
+									console.log("htmlstart");
+									console.log(newItag);
+									console.log("htmlend");
+								 
+								htmlTagli=htmlTagli.concat('<li class="scl_o"><p class="scl_tmb"><br /> </p><a id="'+category+'" href="#" onclick="javascript:pushLishClick(this.id);"><p class="scl_cnt"><span class="scl_messageTitle">'
+										+ category
 										+ '</span><br> <span class="scl_textContent">'
 										+ contentText
-										+ '</span> <span class="scl_date" id="'+notiID+'">'+receivedate+'</span></p></a></li>');
-										                    }    
+										+ '</span><span class="scl_date" id="'+category+'">'+receivedate+'&nbsp;&nbsp;<i '+newItag+' class="fa fa-comment fa-2x"></i></span></p></a></li>');
+					                     
+							
+						}    
+						console.log("완성된 html start");
+						console.log(htmlTagli);
+						console.log("완성된 html end");
 						$(".ul_pushList").html(htmlTagli);
+						
 						oScroll.refresh();
 						console.log('메세지 리스트 셀렉트 받아오기끝');
 						}
@@ -268,7 +307,7 @@ function loginPushListSelect(){
 function nativeBack(){
 	var db = window.sqlitePlugin.openDatabase({name : "PushDB"});
 	db.transaction(function(tx) {
-		 tx.executeSql("select * from message where type=0 order by id desc;",[],
+		 tx.executeSql("select * from message where type=0 or type=1 or type=2 or type=3 group by category order  by datetime(receivedate)  desc ;",[],
 						function(tx, res) {
 							var selectLength = res.rows.length;
 							var htmlTagli="";
@@ -281,8 +320,15 @@ function nativeBack(){
 														
 								for (var i = 0; i < selectLength; i++) {
 										var contentResult = res.rows.item(i).content;
+										console.log('그룹바이 리절트 시작');
+										console.log(contentResult);
+										console.log('그룹바이 리절트 끝');
 										var notiID = res.rows.item(i).id;
 										var receivedate=res.rows.item(i).receivedate;
+										var category=res.rows.item(i).category;
+										console.log('카테고리시작 ');
+										console.log(category);
+										console.log('카테고리 끝');
 										console.log('메세지수신날짜');
 										console.log(receivedate);
 										console.log('메세지수신날짜');
@@ -304,22 +350,51 @@ function nativeBack(){
 										console.log(contentResult.notification.ticker);
 										console.log(contentResult.notification.contentText);
 									    var contentText=contentResult.notification.contentText;
-										  if(contentText.length>20){
+										//제목 길이  
+									    if(contentText.length>20){
 										      contentText=contentText.substring(0, 18);
 											  contentText=contentText.concat('...');
 										  }
-										htmlTagli=htmlTagli.concat('<li class="scl_o"><p class="scl_tmb"><br /> <a href="#" onclick="javascript:pushListDelete('+notiID+');"><i class="fa fa-trash-o fa-2x"></i></a></p><a a href="#" onclick="javascript:pushLishClick('+notiID+');"><p class="scl_cnt"><span class="scl_messageTitle">'
-												+ contentResult.notification.contentTitle
-												+ '</span><br> <span class="scl_textContent">'
-												+ contentText
-												+ '</span> <span class="scl_date" id="'+notiID+'">'+receivedate+'</span></p></a></li>');
+											 var newItag="";
+										
+										//새로운 메세지 
+									    if(res.rows.item(i).read==1){
+													
+												newItag='style="display: none;"';
+												
+										 	}else{
+													newItag='';
+									    	}
+												
+									   
+									    
+												console.log("htmlstart");
+												console.log(newItag);
+												console.log("htmlend");
+												
+											 
+											htmlTagli=htmlTagli.concat('<li class="scl_o"><p class="scl_tmb"><br /> </p><a id="'+category+'" href="#" onclick="javascript:pushLishClick(this.id);"><p class="scl_cnt"><span class="scl_messageTitle">'
+													+ category
+													+ '</span><br> <span class="scl_textContent">'
+													+ contentText
+													+ '</span><span class="scl_date" id="'+category+'">'+receivedate+'&nbsp;&nbsp;<i '+newItag+' class="fa fa-comment fa-2x"></i></span></p></a></li>');
 								                    }    
+								
+								console.log("완성된 html start");
+								console.log(htmlTagli);
+								console.log("완성된 html end");
 								$(".ul_pushList").html(htmlTagli);
 								oScroll.refresh();
 								console.log('메세지 리스트 셀렉트 받아오기끝');
 								}		
 							});
 					});
+}
+
+function test(){
+    console.log('네이티브 콜 성공');
+	alert("Test OK");
+    
 }
 
 

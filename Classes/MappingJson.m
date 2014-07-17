@@ -22,6 +22,7 @@
     NSDictionary *dMessage = [jUil jSonToObject:pPushMessage];
     
     NSString *content = [jUil objectToJSon:dMessage[@"content"]];
+    NSString *category = dMessage[@"category"];
     
     NSDateFormatter *dateFormat=[[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"yyyy-MM-dd hh:mm:ss:SS"];
@@ -34,6 +35,8 @@
         [pMessage setType:[dMessage[@"type"] intValue]];
         [pMessage setContent:content];
         [pMessage setReceivedate:[dateFormat stringFromDate:now]];
+        [pMessage setRead:0];
+        [pMessage setCategory:category];
      }
     @catch (NSException *exception) {
         NSLog(@"Mapping exceptionName %@, reason %@", [exception name], [exception reason]);

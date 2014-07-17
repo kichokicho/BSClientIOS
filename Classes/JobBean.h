@@ -12,7 +12,7 @@
 
 @property int id;
 @property int type;
-@property NSString *topic;
-@property NSString *content;
+@property (nonatomic, retain) NSString *topic;
+@property (nonatomic, retain) NSString *content;
 
 @end

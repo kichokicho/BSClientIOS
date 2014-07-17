@@ -1,5 +1,3 @@
-
-/* JavaScript content from js/jindo/jindo_mobile_component.js in folder common */
 /** Jindo Mobile Component(minify:5) : ../../www/docs/jindo-mobile/archive/1.14.0/
  *	jindo.m
  *	jindo.m.Effect

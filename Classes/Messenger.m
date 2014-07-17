@@ -15,6 +15,7 @@
 #import "JsonUtil.h"
 
 
+
 // Connect Callbacks
 @interface ConnectCallbacks : NSObject <InvocationComplete>
 - (void) onSuccess:(NSObject*) invocationContext;
@@ -23,17 +24,37 @@
 @implementation ConnectCallbacks
 - (void) onSuccess:(NSObject*) invocationContext
 {
-    NSLog(@"%s:%d - invocationContext=%@", __func__, __LINE__, invocationContext);
-    [[Messenger sharedMessenger] addLogMessage:@"Connected to server!" type:@"Action"];
+    NSLog(@"- invocationContext=%@", invocationContext);
+//    [[Messenger sharedMessenger] addLogMessage:@"Connected to server!" type:@"Action"];
     
 //    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
 //    [appDelegate updateConnectButton];
 }
 - (void) onFailure:(NSObject*) invocationContext errorCode:(int) errorCode errorMessage:(NSString*) errorMessage
 {
-    NSLog(@"%s:%d - invocationContext=%@  errorCode=%d  errorMessage=%@", __func__,
-        __LINE__, invocationContext, errorCode, errorMessage);
-    [[Messenger sharedMessenger] addLogMessage:@"Failed to connect!" type:@"Action"];
+    NSLog(@"- invocationContext=%@  errorCode=%d  errorMessage=%@", invocationContext, errorCode, errorMessage);
+//    [[Messenger sharedMessenger] addLogMessage:@"Failed to connect!" type:@"Action"];
+}
+@end
+
+// disConnect Callbacks
+@interface DisConnectCallbacks : NSObject <InvocationComplete>
+- (void) onSuccess:(NSObject*) invocationContext;
+- (void) onFailure:(NSObject*) invocationContext errorCode:(int) errorCode errorMessage:(NSString*) errorMessage;
+@end
+@implementation DisConnectCallbacks
+- (void) onSuccess:(NSObject*) invocationContext
+{
+    NSLog(@"- invocationContext=%@", invocationContext);
+//    [[Messenger sharedMessenger] addLogMessage:@"DisConnected to server!" type:@"Action"];
+    
+    //    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+    //    [appDelegate updateConnectButton];
+}
+- (void) onFailure:(NSObject*) invocationContext errorCode:(int) errorCode errorMessage:(NSString*) errorMessage
+{
+    NSLog(@"- invocationContext=%@  errorCode=%d  errorMessage=%@", invocationContext, errorCode, errorMessage);
+//    [[Messenger sharedMessenger] addLogMessage:@"Failed to disconnect!" type:@"Action"];
 }
 @end
 
@@ -61,10 +82,10 @@
 @implementation SubscribeCallbacks
 - (void) onSuccess:(NSObject*) invocationContext
 {
-    NSLog(@"%s:%d - invocationContext=%@", __func__, __LINE__, invocationContext);
+    NSLog(@"- invocationContext=%@", invocationContext);
 //    NSLog(@"SubscribeCallbacks - onSuccess");
-    NSString *topic = (NSString *)invocationContext;
-    [[Messenger sharedMessenger] addLogMessage:[NSString stringWithFormat:@"Subscribed to %@", topic] type:@"Action"];
+//    NSString *topic = (NSString *)invocationContext;
+//    [[Messenger sharedMessenger] addLogMessage:[NSString stringWithFormat:@"Subscribed to %@", topic] type:@"Action"];
 
 //    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
 //    [appDelegate reloadSubscriptionList];
@@ -83,13 +104,13 @@
 @implementation UnsubscribeCallbacks
 - (void) onSuccess:(NSObject*) invocationContext
 {
-    NSLog(@"%s:%d - invocationContext=%@", __func__, __LINE__, invocationContext);
-    NSString *topic = (NSString *)invocationContext;
-    [[Messenger sharedMessenger] addLogMessage:[NSString stringWithFormat:@"Unsubscribed to %@", topic] type:@"Action"];
+    NSLog(@"- invocationContext=%@", invocationContext);
+//    NSString *topic = (NSString *)invocationContext;
+//    [[Messenger sharedMessenger] addLogMessage:[NSString stringWithFormat:@"Unsubscribed to %@", topic] type:@"Action"];
 }
 - (void) onFailure:(NSObject*) invocationContext errorCode:(int) errorCode errorMessage:(NSString*) errorMessage
 {
-    NSLog(@"%s:%d - invocationContext=%@  errorCode=%d  errorMessage=%@", __func__, __LINE__, invocationContext, errorCode, errorMessage);
+    NSLog(@"- invocationContext=%@  errorCode=%d  errorMessage=%@", invocationContext, errorCode, errorMessage);
 }
 @end
 
@@ -117,7 +138,7 @@
     NSString *topic = msg.destinationName;
     NSString *retainedStr = retained ? @" [retained]" : @"";
     NSString *logStr = [NSString stringWithFormat:@"[%@ QoS:%d] %@%@", topic, qos, payload, retainedStr];
-    NSLog(@"%s:%d - %@", __func__, __LINE__, logStr);
+    NSLog(@"- %@", logStr);
     NSLog(@"GeneralCallbacks - onMessageArrived!");
 //    [[Messenger sharedMessenger] addLogMessage:logStr type:@"Subscribe"];
     
@@ -136,6 +157,10 @@
     NSMutableArray *subscribeList;
     Subscription *sub;
 //    TopicBean *topicBean = [[TopicBean alloc]init];
+//    UIWebView *pWebView = [[Messenger sharedMessenger] pWebView];
+    
+    
+    
 
     
     @try {
@@ -144,9 +169,11 @@
         
         
         switch (messageBean.type) {
-            case 0:
-            case 1:
-            case 2:
+            case 0: // 개인메시지
+			case 1: // 전체메시지
+			case 2: // 그룹메시지(계열사)
+			case 3: // 그룹메시지(부서)
+			case 4: // 그룹메시지(직급)
                 if (messageBean.ack) {
                     [tmpMS appendFormat:@"{\"userID\":\"%@\",\"id\":%d}",userid, messageBean.id];
                     [job setType:0]; //PUBLISH
@@ -171,6 +198,9 @@
       //          [[UIApplication sharedApplication] scheduleLocalNotification:localNotif];
                 [[UIApplication sharedApplication] presentLocalNotificationNow:localNotif];
                 // Local Notification - end
+                
+//                [pWebView stringByEvaluatingJavaScriptFromString:@"test()"];
+//                NSLog(@"=============  javascript Call ");
                 
                 break;
             case 100:
@@ -269,8 +299,9 @@
         self.userID = nil;
         self.pDB = [[PushDataBase alloc]init];
         self.client.callbacks = [[GeneralCallbacks alloc] init];
-        self.logMessages = [[NSMutableArray alloc] init];
+//        self.logMessages = [[NSMutableArray alloc] init];
         self.SubscriptionData = [[NSMutableArray alloc] init];
+        self.pWebView = [UIWebView alloc];
     }
     return self;
 }
@@ -291,9 +322,13 @@
     ConnectOptions *opts = [[ConnectOptions alloc] init];
     opts.timeout = 3600;
     opts.cleanSession = cleanSession;
+
+    SSLOptions *ssloti = [[SSLOptions alloc] init];
+    ssloti.enableServerCertAuth = FALSE;
+    opts.sslProperties = ssloti;
+
     
-    
-    NSLog(@"%s:%d host=%@, port=%@, clientId=%@", __func__, __LINE__, hosts, ports, clientId);
+    NSLog(@"host=%@, port=%@, clientId=%@", hosts, ports, clientId);
     [client connectWithOptions:opts invocationContext:self onCompletion:[[ConnectCallbacks alloc] init]];
 }
 
@@ -305,7 +340,7 @@
 //    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
 //    [appDelegate reloadSubscriptionList];
     
-    [client disconnectWithOptions:opts invocationContext:self onCompletion:[[ConnectCallbacks alloc] init]];
+    [client disconnectWithOptions:opts invocationContext:self onCompletion:[[DisConnectCallbacks alloc] init]];
 }
 
 - (void)publish:(NSString *)topic payload:(NSString *)payload qos:(int)qos retained:(BOOL)retained
@@ -314,8 +349,8 @@
     
     NSString *retainedStr = retained ? @" [retained]" : @"";
     NSString *logStr = [NSString stringWithFormat:@"[%@] %@%@", topic, payload, retainedStr];
-    NSLog(@"%s:%d - %@", __func__, __LINE__, logStr);
-    [[Messenger sharedMessenger] addLogMessage:logStr type:@"Publish"];
+    NSLog(@"- %@", logStr);
+//    [[Messenger sharedMessenger] addLogMessage:logStr type:@"Publish"];
     
     NSLog(@"=========== playload2 :%@", payload);
     MqttMessage *msg = [[MqttMessage alloc] initWithMqttMessage:topic payload:(char*)[payload UTF8String] length:(int)payload.length qos:qos retained:retained duplicate:NO];
@@ -326,7 +361,7 @@
 
 - (void)subscribe:(NSString *)topicFilter qos:(int)qos
 {
-    NSLog(@"%s:%d topicFilter=%@, qos=%d", __func__, __LINE__, topicFilter, qos);
+    NSLog(@"topicFilter=%@, qos=%d", topicFilter, qos);
     NSLog(@"=====  subscribe start");
     
     [client subscribe:topicFilter qos:qos invocationContext:topicFilter onCompletion:[[SubscribeCallbacks alloc] init]];
@@ -352,7 +387,7 @@
 
 - (void)unsubscribe:(NSString *)topicFilter
 {
-    NSLog(@"%s:%d topicFilter=%@", __func__, __LINE__, topicFilter);
+    NSLog(@"topicFilter=%@", topicFilter);
     [client unsubscribe:topicFilter invocationContext:topicFilter onCompletion:[[UnsubscribeCallbacks alloc] init]];
     
     NSUInteger currentIndex = 0;
@@ -365,37 +400,37 @@
     }
 }
 
-- (void)clearLog
-{
-    self.logMessages = [[NSMutableArray alloc] init];
-}
+//- (void)clearLog
+//{
+////    self.logMessages = [[NSMutableArray alloc] init];
+//}
 
-- (void)addLogMessage:(NSString *)data type:(NSString *)type
-{
-    LogMessage *msg = [[LogMessage alloc] init];
-    msg.data = data;
-    msg.type = type;
-    
-    NSDateFormatter *DateFormatter=[[NSDateFormatter alloc] init];
-    [DateFormatter setDateFormat:@"yyyy-MM-dd hh:mm:ss"];
-    msg.timestamp = [DateFormatter stringFromDate:[NSDate date]];
-    
-    NSLog(@"=== msg data : %@,  type:%@", data, type);
-    
-   
-//    if ([data  isEqual: @"Connected to server!"]) {
-//        NSLog(@"=== aaaaaaaaaa");
-//        [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(mqttSubscribe2) userInfo:nil repeats:NO];
-//        NSLog(@"=== bbbbbbbbbbb");
-//
-//        //        NSString *topic = @"test/12345";
-////        NSString *msg = @"good";
-////        [[Messenger sharedMessenger] subscribe:topic qos:(int)1];
-//    }
-//    [self.logMessages addObject:msg];
-//    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
-//    [appDelegate reloadLog];
-}
+//- (void)addLogMessage:(NSString *)data type:(NSString *)type
+//{
+//    LogMessage *msg = [[LogMessage alloc] init];
+//    msg.data = data;
+//    msg.type = type;
+//    
+//    NSDateFormatter *DateFormatter=[[NSDateFormatter alloc] init];
+//    [DateFormatter setDateFormat:@"yyyy-MM-dd hh:mm:ss"];
+//    msg.timestamp = [DateFormatter stringFromDate:[NSDate date]];
+//    
+//    NSLog(@"=== msg data : %@,  type:%@", data, type);
+//    
+//   
+////    if ([data  isEqual: @"Connected to server!"]) {
+////        NSLog(@"=== aaaaaaaaaa");
+////        [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(mqttSubscribe2) userInfo:nil repeats:NO];
+////        NSLog(@"=== bbbbbbbbbbb");
+////
+////        //        NSString *topic = @"test/12345";
+//////        NSString *msg = @"good";
+//////        [[Messenger sharedMessenger] subscribe:topic qos:(int)1];
+////    }
+////    [self.logMessages addObject:msg];
+////    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+////    [appDelegate reloadLog];
+//}
 
 
 

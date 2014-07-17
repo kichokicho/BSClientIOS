@@ -10,8 +10,8 @@
 
 @interface LogMessage : NSObject
 
-@property NSString *timestamp;
-@property NSString *data;
-@property NSString *type;
+@property (nonatomic, retain) NSString *timestamp;
+@property (nonatomic, retain) NSString *data;
+@property (nonatomic, retain) NSString *type;
 
 @end

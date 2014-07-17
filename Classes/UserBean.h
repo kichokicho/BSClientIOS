@@ -10,9 +10,9 @@
 
 @interface UserBean : NSObject
 
-@property NSString *userid;
-@property NSString *password;
-@property NSString *tokenid;
+@property (nonatomic, retain) NSString *userid;
+@property (nonatomic, retain) NSString *password;
+@property (nonatomic, retain) NSString *tokenid;
 @property int currentuser;
 
 @end

@@ -266,7 +266,7 @@ static void sqlite_regexp(sqlite3_context* context, int argc, sqlite3_value** va
                             } else {
                                 NSLog(@"topic 테이블 생성이 실패 되었습니다.");
                             }
-                            b = sqlite3_exec(db, (const char*)"CREATE TABLE message (id integer, userid text, ack integer,type integer, content text, receivedate text, primary key (id, userid));", NULL, NULL, NULL);
+                            b = sqlite3_exec(db, (const char*)"CREATE TABLE message (id integer, userid text, ack integer,type integer, content text, receivedate text, category TEXT, read INTEGER, primary key (id, userid));", NULL, NULL, NULL);
                             if (createOK == 0) {
                                 NSLog(@"message 테이블 생성이 완료 되었습니다.");
                             } else {

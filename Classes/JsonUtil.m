@@ -19,7 +19,7 @@
 {
     // JSON DATA ( utf-8 encoding ) --> OBJ
     
-    NSError* error;
+//    NSError* error;
 //    NSDictionary* json = [NSJSONSerialization
 //                          JSONObjectWithData:[jSonData dataUsingEncoding:NSUTF8StringEncoding]
 //                          options:kNilOptions

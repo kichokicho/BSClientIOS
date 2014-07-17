@@ -11,10 +11,12 @@
 @interface MessageBean : NSObject
 
 @property int id;
-@property NSString *userid;
+@property (nonatomic, retain) NSString *userid;
 @property int ack;
 @property int type;
-@property NSString *content;
-@property NSString *receivedate;
+@property (nonatomic, retain) NSString *content;
+@property (nonatomic, retain) NSString *receivedate;
+@property int  read;
+@property (nonatomic, retain) NSString *category;
 
 @end

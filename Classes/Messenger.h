@@ -18,8 +18,9 @@
 @property (nonatomic, retain) NSString *clientID;
 @property (nonatomic, retain) NSString *userID;
 @property PushDataBase *pDB;
-@property NSMutableArray *logMessages;
-@property NSMutableArray *subscriptionData;
+//@property NSMutableArray *logMessages;
+@property (nonatomic, retain) NSMutableArray *subscriptionData;
+@property (nonatomic, retain) UIWebView *pWebView;
 
 + (id)sharedMessenger;
 - (void)connectWithHosts:(NSArray *)hosts ports:(NSArray *)ports clientId:(NSString *)clientId cleanSession:(BOOL)cleanSession;
@@ -27,7 +28,7 @@
 - (void)subscribe:(NSString *)topicFilter qos:(int)qos;
 - (void)unsubscribe:(NSString *)topicFilter;
 - (void)disconnectWithTimeout:(int)timeout;
-- (void)clearLog;
-- (void)addLogMessage:(NSString *)data type:(NSString *)type;
+//- (void)clearLog;
+//- (void)addLogMessage:(NSString *)data type:(NSString *)type;
 
 @end

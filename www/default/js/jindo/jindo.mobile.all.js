@@ -1,5 +1,3 @@
-
-/* JavaScript content from js/jindo/jindo.mobile.all.js in folder common */
 var jindo = window.jindo||{};// (function(jindoName,undefined){
 // var jindo = window.jindo||{};
 jindo._p_ = {};

@@ -12,15 +12,19 @@
 //
 
 #import "CDVMainViewController.h"
+#import "Messenger.h"
 
 @implementation CDVMainViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
+    
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
     }
+    
+    
     return self;
 }
 
@@ -49,6 +53,7 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
+    
     // Return YES for supported orientations
     return [super shouldAutorotateToInterfaceOrientation:interfaceOrientation];
 }
@@ -60,11 +65,23 @@
  */
 - (void)webViewDidFinishLoad:(UIWebView *)theWebView 
 {
+    
+    //WebView save
+    [[Messenger sharedMessenger] setPWebView:self.webView];
+
+//    [self.webView stringByEvaluatingJavaScriptFromString:@"(function() { console.log('네이티브22 콜 성공'); }) ()"];
+//    [self.webView stringByEvaluatingJavaScriptFromString:@"test()"];
+    
+//    UIWebView * aa = [[Messenger sharedMessenger]pWebView];
+//    [aa stringByEvaluatingJavaScriptFromString:@"test()"];
+    
 	return [ super webViewDidFinishLoad:theWebView ];
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)theWebView 
 {
+    
+    
 	return [ super webViewDidStartLoad:theWebView ];
 }
 
@@ -84,6 +101,7 @@
  */
 - (BOOL)webView:(UIWebView *)theWebView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
+    
 	return [ super webView:theWebView shouldStartLoadWithRequest:request navigationType:navigationType ];
 }
 

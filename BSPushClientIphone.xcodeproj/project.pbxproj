@@ -43,7 +43,7 @@
 		2209C0911961CD110004B551 /* SBJsonStreamWriterAccumulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 2209C0851961CD110004B551 /* SBJsonStreamWriterAccumulator.m */; };
 		2209C0921961CD110004B551 /* SBJsonStreamWriterState.m in Sources */ = {isa = PBXBuildFile; fileRef = 2209C0871961CD110004B551 /* SBJsonStreamWriterState.m */; };
 		2209C0931961CD110004B551 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2209C0891961CD110004B551 /* SBJsonWriter.m */; };
-		228614B71961978400C000EF /* libiosMQTT.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 228614B51961978400C000EF /* libiosMQTT.a */; };
+		22136C9C1973950E00F71A86 /* libiosMQTT.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22136C9B1973950E00F71A86 /* libiosMQTT.a */; };
 		2710065116A09DEF0072351B /* Localizations.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2710065016A09DEF0072351B /* Localizations.bundle */; };
 		2710067116A09DEF0072351B /* CDVCapture.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2710067016A09DEF0072351B /* CDVCapture.bundle */; };
 		2710069116A09DEF0072351B /* CDVNotification.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2710069016A09DEF0072351B /* CDVNotification.bundle */; };
@@ -172,7 +172,7 @@
 		2209C0871961CD110004B551 /* SBJsonStreamWriterState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonStreamWriterState.m; sourceTree = "<group>"; };
 		2209C0881961CD110004B551 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
 		2209C0891961CD110004B551 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
-		228614B51961978400C000EF /* libiosMQTT.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libiosMQTT.a; sourceTree = "<group>"; };
+		22136C9B1973950E00F71A86 /* libiosMQTT.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libiosMQTT.a; sourceTree = "<group>"; };
 		228614B61961978400C000EF /* MqttOCClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MqttOCClient.h; sourceTree = "<group>"; };
 		2710065016A09DEF0072351B /* Localizations.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Localizations.bundle; path = Resources/Localizations.bundle; sourceTree = "<group>"; };
 		2710067016A09DEF0072351B /* CDVCapture.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = CDVCapture.bundle; path = Resources/CDVCapture.bundle; sourceTree = "<group>"; };
@@ -332,7 +332,7 @@
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
 				301BF5B5109A6A2B0062928A /* AddressBook.framework in Frameworks */,
 				301BF5B7109A6A2B0062928A /* AddressBookUI.framework in Frameworks */,
-				228614B71961978400C000EF /* libiosMQTT.a in Frameworks */,
+				22136C9C1973950E00F71A86 /* libiosMQTT.a in Frameworks */,
 				301BF5B9109A6A2B0062928A /* AudioToolbox.framework in Frameworks */,
 				47F3D1F41723E20B004534C9 /* AssetsLibrary.framework in Frameworks */,
 				301BF5BB109A6A2B0062928A /* AVFoundation.framework in Frameworks */,
@@ -423,8 +423,8 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				22136C9B1973950E00F71A86 /* libiosMQTT.a */,
 				2209C0741961CD110004B551 /* SBJson */,
-				228614B51961978400C000EF /* libiosMQTT.a */,
 				228614B61961978400C000EF /* MqttOCClient.h */,
 				9C8D137F15EA404F00392D18 /* CordovaLib.xcodeproj */,
 				9C3102AA14E1804D006D8917 /* WorklightSDK */,
@@ -852,7 +852,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = BSPushClientIphone_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)/CordovaLib/build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/include\"",

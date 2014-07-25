@@ -41,6 +41,9 @@ static float JOBINTERVAL = 17.0f;
             NSLog(@"allKeys : %@",[allKeys objectAtIndex:i]);
             NSLog(@"allValues : %@",[allValues objectAtIndex:i]);
         }
+
+        application.applicationIconBadgeNumber = 0;
+        
         
 //        NSDictionary *remoteNotificationKeyDictionary = [launchOptions valueForKey:@"UIApplicationLaunchOptionsRemoteNotificationKey"];
 //        NSDictionary *apsDictionary = [remoteNotificationKeyDictionary valueForKey:@"aps"];
@@ -56,6 +59,8 @@ static float JOBINTERVAL = 17.0f;
     }
     //앱이 완전 종료 후 푸쉬 받을때 - end
     
+    
+//    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 
     //MQQ Connect try - start
     [self backgroundMQTTConection];
@@ -86,6 +91,19 @@ static float JOBINTERVAL = 17.0f;
     
 //    [self testP];
     
+//    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+//    UIViewController* rootViewController = [[Compatibility50ViewController alloc] init];
+//    
+//    [self.window setRootViewController:rootViewController];
+//    [self.window makeKeyAndVisible];
+//    
+//    [[WL sharedInstance] showSplashScreen];
+//    
+//    [[WL sharedInstance] initializeWebFrameworkWithDelegate:self];
+    
+//    self.window.rootViewController = self.viewController;
+    
+    
     return ret;
 }
 
@@ -99,7 +117,7 @@ static float JOBINTERVAL = 17.0f;
     
 //    NSLog(@"==== tapnsToken : %@", tapnsToken);
     
-    if (tapnsToken == NULL) {
+    if (tapnsToken == nil) {
         
         // Prepare the Device Token for Registration (remove spaces and < >)
         NSString *aToken = [[[[apnsToken description]
@@ -153,7 +171,9 @@ static float JOBINTERVAL = 17.0f;
     //        PushDataBase *pDataBase = [[PushDataBase alloc] init];
     //        [pDataBase insertPushData:dateString PushMessage:message];
     
-    [self PushProcess:message andMessageForm:messageForm];
+//    [self PushProcess:message andMessageForm:messageForm];
+    
+    application.applicationIconBadgeNumber = 0;
     
 }
 
@@ -168,15 +188,23 @@ static float JOBINTERVAL = 17.0f;
 //    [self PushProcess:contentText andMessageForm:contentTitle];
     //    NSString *action = [userInfo objectForKey:@"action1"];
     
-    [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(javascriptCall) userInfo:nil repeats:NO];
+    NSString *javascriptFuntion = notification.alertBody;
+
+    UIWebView * pWebView = [[Messenger sharedMessenger]pWebView];
+    [pWebView stringByEvaluatingJavaScriptFromString:javascriptFuntion];
+
     
+//    [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(javascriptCall) userInfo:nil repeats:NO];
+    application.applicationIconBadgeNumber = 0;
     
 }
 
 - (void) javascriptCall {
-    UIWebView * pWebView = [[Messenger sharedMessenger]pWebView];
-    [pWebView stringByEvaluatingJavaScriptFromString:@"test()"];
+//    NSString * javascriptFuntion = @"refreshFunction";
     
+    UIWebView * pWebView = [[Messenger sharedMessenger]pWebView];
+    [pWebView stringByEvaluatingJavaScriptFromString:@"refreshFunction('경조사')"];
+
 }
 
 

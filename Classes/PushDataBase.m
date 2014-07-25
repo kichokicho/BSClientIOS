@@ -210,7 +210,7 @@
 {
     NSLog(@"======  getAPNSToken - Start ");
     
-	NSString *apnsToken;      // Message  ID
+	NSString *apnsToken = nil;      // Message  ID
     
 	sqlite3_stmt *statement = nil;
 	sqlite3 *pDataBase;

@@ -166,6 +166,8 @@ if (window.addEventListener) {
 	});
 }
 
+
+
 function pushListJSAtOnload() {
 	var element = document.createElement("script");
 	element.src = "js/pages/pushList.js";
@@ -211,6 +213,18 @@ function wlbackFunc() {
 
 }
 
+function refreshFunction(category){
+	console.log('리프레쉬 펑션');
+	console.log(category);
+
+	if(pagesHistory.length==0){
+		console.log("페이지 히스토리 0");
+		loginPushListSelect();	
+	}else if(pagesHistory.length==1){
+		console.log("페이지 히스토리 1");
+		selectDetail(category);	
+	}	
+}
 //loginPushListSelect!!
 function loginPushListSelect(){
 	var db = window.sqlitePlugin.openDatabase({
@@ -279,7 +293,7 @@ function loginPushListSelect(){
 									console.log(newItag);
 									console.log("htmlend");
 								 
-								htmlTagli=htmlTagli.concat('<li class="scl_o"><p class="scl_tmb"><br /> </p><a id="'+category+'" href="#" onclick="javascript:pushLishClick(this.id);"><p class="scl_cnt"><span class="scl_messageTitle">'
+								htmlTagli=htmlTagli.concat('<li class="scl_o"><p class="scl_tmb"><br /> </p><a id="'+category+'" href="#"   onclick="javascript:pushLishClick(this.id);"><p class="scl_cnt"><span class="scl_messageTitle">'
 										+ category
 										+ '</span><br> <span class="scl_textContent">'
 										+ contentText
@@ -373,7 +387,7 @@ function nativeBack(){
 												console.log("htmlend");
 												
 											 
-											htmlTagli=htmlTagli.concat('<li class="scl_o"><p class="scl_tmb"><br /> </p><a id="'+category+'" href="#" onclick="javascript:pushLishClick(this.id);"><p class="scl_cnt"><span class="scl_messageTitle">'
+											htmlTagli=htmlTagli.concat('<li class="scl_o"><p class="scl_tmb"><br /> </p><a id="'+category+'"   href="#" onclick="javascript:pushLishClick(this.id);"><p class="scl_cnt"><span class="scl_messageTitle">'
 													+ category
 													+ '</span><br> <span class="scl_textContent">'
 													+ contentText
@@ -389,12 +403,6 @@ function nativeBack(){
 								}		
 							});
 					});
-}
-
-function test(){
-    console.log('네이티브 콜 성공');
-	alert("Test OK");
-    
 }
 
 

@@ -1,10 +1,40 @@
 
 
+$("img").click(function(){
+	var imageSource=$(this).attr('src');
+	 var imageWidth =$(this).css("width");
+	 var imageHeight =$(this).css("height");
+	 console.log('이미지 src');
+	 console.log(imageSource);
+	 console.log(imageWidth);
+	 console.log(imageHeight);
+	 console.log('이미지 src end');
+     
+     window.open(imageSource,'myWin','height='+imageHeight+', width='+imageWidth+'');
+
+});
+
+
+	// Check for browser support of event handling capability
+	if (window.addEventListener){
+		 document.getElementById( 'bottom_div' ).scrollIntoView(true);
+	}
+		
+	else if (window.attachEvent){
+		 document.getElementById( 'bottom_div' ).scrollIntoView(true);
+	}
+	
+	else{
+		 document.getElementById( 'bottom_div' ).scrollIntoView(true);
+	}
+		
+
 function deleteButtonOffFuncton() {
 
 	console.log('헤더 클릭 편집 버튼 클릭 이벤트 ');
 	$('.deleteOffButton').hide();
 	$('.deleteOnButton').show();
+
 	// .fa-envelope{
 	// margin-left: 32px;
 	//
@@ -66,13 +96,14 @@ function deleteSelectOnFuncton() {
 //설문조사 응답 코드
 //$( "#log" ).html( $( "input:checked" ).val() + " is checked!" );
 //nameResearch
-function researchRes(notiId,pollId){
+function researchRes(notiId,pollId,surveyNoid){
 	//var mailTp 		= $(':radio[name="mailTp"]:checked').val();
 	var researchResult="";
 	var researchInt="";
 	console.log("설문조사 아이디");
 	console.log(pollId);
-	var radio=$("div#"+notiId+" input[type=radio]");
+	var radio=$("li#"+notiId+" input[type=radio]");
+	
 	for(var i=0;i<radio.length;i++){
 			if(radio[i].checked){
 				console.log('체크된 라디오 버튼 위치 ');
@@ -99,18 +130,28 @@ function researchRes(notiId,pollId){
 	}
 	
 //	var dialogTitle = "설문조사 응답";
-	var dialogContent = researchResult+"으로 설문에 응하 시겠습니까 ?";
+	var dialogContent="";
+	console.log('설문조사 응압 무기명일까요?');
+	console.log(surveyNoid);
+	if(surveyNoid=="true"||surveyNoid==true){
+		console.log('이프');
+		dialogContent = researchResult+"으로 설문(무기명)에 응하 시겠습니까 ?";
+	}else{
+		console.log('엘스');
+		dialogContent = researchResult+"으로 설문에 응하 시겠습니까 ?";
+	}
+
 	
 	var r = confirm(dialogContent);
 	if (r == true) {
-		researchInsert(researchResult,notiId,pollId,researchInt);
+		researchInsert(researchResult,notiId,pollId,researchInt,surveyNoid);
 	} else {
 	   
 	}
 	
 }
 	//설문 조사 인설트 
-function researchInsert(researchResult,notiId,pollId,researchInt){
+function researchInsert(researchResult,notiId,pollId,researchInt,surveyNoid){
 	console.log('설문조사 인설트 시작');
 	console.log(researchResult);
 	console.log(notiId);
@@ -123,7 +164,17 @@ function researchInsert(researchResult,notiId,pollId,researchInt){
 		});
 		console.log('db 트랙젼션 시작 전');
 		db.transaction(function(tx) {
-		tx.executeSql("INSERT INTO job (type,topic,content) VALUES (?,?,?)", [0,"/push/poll","{\"id\":"+pollId+",\"answerid\":"+researchInt+",\"userid\":"+currentLoginID+"}"],
+			var loginid=currentLoginID;
+			if(surveyNoid=="true"||surveyNoid==true){
+				loginid="";
+				console.log('무기명일경우 로그인아이디 ');
+				console.log(loginid);
+			}else{
+				console.log('무기명이 아닐경우');
+				console.log(loginid);
+			}
+		//insert
+			tx.executeSql("INSERT INTO job (type,topic,content) VALUES (?,?,?)", [0,"/push/poll","{\"id\":"+pollId+",\"answerid\":"+researchInt+",\"userid\":\""+loginid+"\"}"],
 					function(tx, res) {
 						console.log("인서트 결과 처리시작");
 						var insertResult=res.rowsAffected;
@@ -138,6 +189,37 @@ function researchInsert(researchResult,notiId,pollId,researchInt){
 							alert('설문에 응답에 실패하였습니다.');
 						}
 					});
+		//delete
+			tx
+			.executeSql(
+					"delete from message where id="+notiId,
+					[],
+					function(tx, res) {
+						var deleteResult = res.rowsAffected;
+						console
+								.log('삭제 쿼리 결과 !!!!!!!!!!!!!!!!!!!!!!!');
+						console.log(deleteResult);
+						if (deleteResult !== 0) {
+								$('#' + notiId).remove();
+								console.log('in for end');
+							var divTagLength = $('.cd-timeline-block').length;
+							console.log('divTagLength 테그의 길이가 영이냐?');
+							console.log(divTagLength);
+							console.log('divTagLength 테그의 길이가 영이냐?');
+							if (divTagLength == 0) {
+								$('#cd-timeline')
+										.html(
+												'<br/><br/><br/><p style="text-align:center;color:#1172b6;">수신된 메세지가 없습니다.</p>');
+							}
+
+							console.log("메세지  삭제 !!!!!!!");
+						} else {
+							console.log("!!삭제 실패 삭제 실패 !!");
+
+						}
+					});
+		
+		
 
 			});
 
@@ -381,7 +463,7 @@ function pageBack() {
 											console.log(newItag);
 											console.log("htmlend");
 										 
-										htmlTagli=htmlTagli.concat('<li class="scl_o"><p class="scl_tmb"><br /> </p><a id="'+category+'" href="#" onclick="javascript:pushLishClick(this.id);"><p class="scl_cnt"><span class="scl_messageTitle">'
+										htmlTagli=htmlTagli.concat('<li class="scl_o"><p class="scl_tmb"><br /> </p><a id="'+category+'" href="#"  onclick="javascript:pushLishClick(this.id);"><p class="scl_cnt"><span class="scl_messageTitle">'
 												+ category
 												+ '</span><br> <span class="scl_textContent">'
 												+ contentText

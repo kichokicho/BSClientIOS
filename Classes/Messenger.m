@@ -158,9 +158,9 @@
     Subscription *sub;
 //    TopicBean *topicBean = [[TopicBean alloc]init];
 //    UIWebView *pWebView = [[Messenger sharedMessenger] pWebView];
-    
-    
-    
+    NSMutableString *javascriptFuntion = [[NSMutableString alloc]init];
+    NSDate *today;
+    NSDate *dateNoti;
 
     
     @try {
@@ -186,17 +186,28 @@
                 
                 // Local Notification - start
                 dContent = [jUtil jSonToObject:messageBean.content];
-                pushInfo = [NSDictionary dictionaryWithObjectsAndKeys:dContent[@"notification"][@"contentTitle"],@"contentTitle",dContent[@"notification"][@"contentText"],@"contentText", nil];
-//                localNotif.fireDate = [[NSDate date] addTimeInterval:10];
+                pushInfo = [NSDictionary dictionaryWithObjectsAndKeys:messageBean.category,@"category", nil];
                 localNotif.timeZone = [NSTimeZone defaultTimeZone];
-                localNotif.alertBody = dContent[@"notification"][@"contentTitle"];
+
+                
+                //javacript call name
+                [javascriptFuntion appendFormat:@"refreshFunction('%@')",messageBean.category];
+                localNotif.alertBody = javascriptFuntion;
+//                localNotif.alertBody = dContent[@"notification"][@"contentTitle"];
+
                 localNotif.alertAction = @"AlertAction";
                 localNotif.soundName = UILocalNotificationDefaultSoundName;
                 localNotif.applicationIconBadgeNumber = 1;
                 localNotif.userInfo = pushInfo;
+                // 5초 후 시간 계산 - start
+                today = [NSDate date];
+                dateNoti = [NSDate dateWithTimeInterval:5 sinceDate:today];
+                // 10초 후 시간 계산 - end
+                localNotif.fireDate = dateNoti;
                 
-      //          [[UIApplication sharedApplication] scheduleLocalNotification:localNotif];
-                [[UIApplication sharedApplication] presentLocalNotificationNow:localNotif];
+
+                [[UIApplication sharedApplication] scheduleLocalNotification:localNotif];
+//                [[UIApplication sharedApplication] presentLocalNotificationNow:localNotif];
                 // Local Notification - end
                 
 //                [pWebView stringByEvaluatingJavaScriptFromString:@"test()"];

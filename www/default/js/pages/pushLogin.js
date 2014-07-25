@@ -1,4 +1,5 @@
 //로그인 펑션
+var loginAjaxData="";
 function loginFunction() {
 	var formCheck = loginFormCheck();
 
@@ -8,82 +9,209 @@ function loginFunction() {
 		
 		busy.show();
 		//ajax call server auth 
-		$
-		.ajax({
-			//https://210.108.94.90/pushAdmin/
-			url :'http://210.108.94.90/v1/auth',
-			//url : 'http://192.168.42.2:9090/v1/auth',
-			type : 'POST',
-			timeout: 10000,
-			contentType : "application/json",
-			dataType : 'json',
-			async : true,
-			data : '{"userID":"' + loginId + '","password":"' + loginPass
-					+ '","deviceID":"'+deviceID+'"}',
-			success : function(data) {
-				console.log('로그인 호출 성공');
-				var loginResult = data.result.success;
-				// success
-				console.log('로그인 호출 결과값 시작!');
-				console.log(data.result);
-				console.log(data.result.success);
-				console.log('로그인 호출 결과값 끝!');
-				if (loginResult) {
-					console.log('success start!');
-					
-					console.log(data.result.data);
-					console.log(data.result.errors);
-					console.log('success end...');
-					if(!data.result.errors){
-					var tokenID = data.result.data.tokenID;
-					currentTokenID=tokenID;
-					console.log('토큰 아이디');
-					console.log(tokenID);
-					console.log('토큰 아이디');
-					//sql lite 현재 유저가 있는지 검색
-					console.log('현재 유저가 있는지 검색!! start');
-					document.addEventListener("deviceready", nowLoginInfoSelect(loginId,loginPass,tokenID), false);
-					}else{
+		
+		var devicePlatform=device.platform;
+	
+		if(devicePlatform==="iOS"){
+			console.log('디바이스 플랫폼이 아이폰 입니다.');
+			
+			var db = window.sqlitePlugin.openDatabase({
+				name : "PushDB"
+			});
+			
+			db.transaction(function(tx) {
+				tx.executeSql("select tokenid  from apnstoken", [],
+							function(tx, res) {
+								console.log("아이폰 토큰 검색시작");
+								var userSelectResult=res.rows.length;
+								
+								if(userSelectResult==1){
+									console.log("셀렉 결과  토큰이 존재함");
+									console.log(res.rows.item(0).tokenid);
+									console.log('셀렉 결과 끝');
+								    var	iosTokenId=res.rows.item(0).tokenid;
+									console.log('리턴할 아이폰 토큰아이디');
+									console.log(iosTokenId);
+									loginAjaxData='{"userID":"' + loginId + '","password":"' + loginPass
+									+ '","deviceID":"'+deviceID+'","apnsToken":"'+iosTokenId+'"}';
+									console.log('아이폰 로그인 ajax 호출 시작');
+									console.log(loginAjaxData);
+									console.log('아이폰 로그인 ajax 호출 끝');
+									
+									$
+									.ajax({
+										//https://210.108.94.90/pushAdmin/
+//										url :'http://210.108.94.90/v1/auth',
+										url :'http://adflow.net:8080/v1/auth',
+										//url : 'http://192.168.42.2:9090/v1/auth',
+										type : 'POST',
+										timeout: 10000,
+										contentType : "application/json",
+										dataType : 'json',
+										async : true,
+										data : loginAjaxData,
+										success : function(data) {
+											console.log('로그인 호출 성공');
+											var loginResult = data.result.success;
+											// success
+											console.log('로그인 호출 결과값 시작!');
+											console.log(data.result);
+											console.log(data.result.success);
+											console.log('로그인 호출 결과값 끝!');
+											if (loginResult) {
+												console.log('success start!');
+												
+												console.log(data.result.data);
+												console.log(data.result.errors);
+												console.log('success end...');
+												if(!data.result.errors){
+												var tokenID = data.result.data.tokenID;
+												currentTokenID=tokenID;
+												console.log('토큰 아이디');
+												console.log(tokenID);
+												console.log('토큰 아이디');
+												//sql lite 현재 유저가 있는지 검색
+												console.log('현재 유저가 있는지 검색!! start');
+												document.addEventListener("deviceready", nowLoginInfoSelect(loginId,loginPass,tokenID), false);
+												}else{
+													busy.hide();
+													var dialogTitle="Token not found";
+													var dialogContent="로그인 정보가 일치 하지 않습니다!";
+													WL.SimpleDialog.show(dialogTitle, dialogContent, [ {
+													    text : '확인'
+													  }
+													  ]);
+												}
+											} else {
+												busy.hide();
+												console.log('push server fail');
+												var dialogTitle="Push Server Error";
+												var dialogContent="로그인에 실패하였습니다.!";
+												WL.SimpleDialog.show(dialogTitle, dialogContent, [ {
+												    text : '확인'
+												  }
+												  ]);
+												
+											}
+
+										},
+										error : function(data, textStatus, request) {
+											console.log('fail start...........');
+											console.log(data);
+											console.log(textStatus);
+											busy.hide();
+											var dialogTitle="Server Error";
+											var dialogContent="로그인에 실패하였습니다.!";
+											WL.SimpleDialog.show(dialogTitle, dialogContent, [ {
+											    text : '확인'
+											  }
+											  ]);
+											
+											
+											console.log('fail end.............');
+										}
+									});
+									
+
+								}else{
+									console.log("토큰이 존재 하지 않음 ");
+									alert('아이폰 토큰이 존재 하지 않습니다.');
+								}
+								
+
+							});
+
+					});
+			
+			
+
+		}else{
+			loginAjaxData='{"userID":"' + loginId + '","password":"' + loginPass
+			+ '","deviceID":"'+deviceID+'"}';
+			console.log('else data ');
+			console.log(loginAjaxData);
+			$
+			.ajax({
+				//https://210.108.94.90/pushAdmin/
+//				url :'http://210.108.94.90/v1/auth',
+				url :'http://adflow.net:8080/v1/auth',
+				//url : 'http://192.168.42.2:9090/v1/auth',
+				type : 'POST',
+				timeout: 10000,
+				contentType : "application/json",
+				dataType : 'json',
+				async : true,
+				data : loginAjaxData,
+				success : function(data) {
+					console.log('로그인 호출 성공');
+					var loginResult = data.result.success;
+					// success
+					console.log('로그인 호출 결과값 시작!');
+					console.log(data.result);
+					console.log(data.result.success);
+					console.log('로그인 호출 결과값 끝!');
+					if (loginResult) {
+						console.log('success start!');
+						
+						console.log(data.result.data);
+						console.log(data.result.errors);
+						console.log('success end...');
+						if(!data.result.errors){
+						var tokenID = data.result.data.tokenID;
+						currentTokenID=tokenID;
+						console.log('토큰 아이디');
+						console.log(tokenID);
+						console.log('토큰 아이디');
+						//sql lite 현재 유저가 있는지 검색
+						console.log('현재 유저가 있는지 검색!! start');
+						document.addEventListener("deviceready", nowLoginInfoSelect(loginId,loginPass,tokenID), false);
+						}else{
+							busy.hide();
+							var dialogTitle="Token not found";
+							var dialogContent="로그인 정보가 일치 하지 않습니다!";
+							WL.SimpleDialog.show(dialogTitle, dialogContent, [ {
+							    text : '확인'
+							  }
+							  ]);
+						}
+					} else {
 						busy.hide();
-						var dialogTitle="Token not found";
-						var dialogContent="로그인 정보가 일치 하지 않습니다!";
+						console.log('push server fail');
+						var dialogTitle="Push Server Error";
+						var dialogContent="로그인에 실패하였습니다.!";
 						WL.SimpleDialog.show(dialogTitle, dialogContent, [ {
 						    text : '확인'
 						  }
 						  ]);
+						
 					}
-				} else {
+
+				},
+				error : function(data, textStatus, request) {
+					console.log('fail start...........');
+					console.log(data);
+					console.log(textStatus);
 					busy.hide();
-					console.log('push server fail');
-					var dialogTitle="Push Server Error";
+					var dialogTitle="Server Error";
 					var dialogContent="로그인에 실패하였습니다.!";
 					WL.SimpleDialog.show(dialogTitle, dialogContent, [ {
 					    text : '확인'
 					  }
 					  ]);
 					
+					
+					console.log('fail end.............');
 				}
+			});
+			
+			
+		}
+		
 
-			},
-			error : function(data, textStatus, request) {
-				console.log('fail start...........');
-				console.log(data);
-				console.log(textStatus);
-				busy.hide();
-				var dialogTitle="Server Error";
-				var dialogContent="로그인에 실패하였습니다.!";
-				WL.SimpleDialog.show(dialogTitle, dialogContent, [ {
-				    text : '확인'
-				  }
-				  ]);
-				
-				
-				console.log('fail end.............');
-			}
-		});
 		
 	}
 }
+
 
 
 

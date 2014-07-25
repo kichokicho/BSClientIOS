@@ -56,6 +56,7 @@
     
     // Return YES for supported orientations
     return [super shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+//    return YES;
 }
 
 #pragma mark - WebView Delegate
@@ -120,5 +121,29 @@
  return [super registerPlugin:plugin withClassName:className];
  }
  */
+
+//#pragma mark CDVOrientationDelegate
+-(BOOL)shouldAutorotate
+{
+    return YES;
+}
+
+-(NSUInteger)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskAll;
+//    NSUInteger ret = 0;
+//    
+//    if ([self shouldAutorotateToInterfaceOrientation:UIInterfaceOrientationPortrait])
+//    ret = ret | (1 << UIInterfaceOrientationPortrait);
+//    if ([self shouldAutorotateToInterfaceOrientation:UIInterfaceOrientationPortraitUpsideDown])
+//    ret = ret | (1 << UIInterfaceOrientationPortraitUpsideDown);
+//    if ([self shouldAutorotateToInterfaceOrientation:UIInterfaceOrientationLandscapeRight])
+//    ret = ret | (1 << UIInterfaceOrientationLandscapeRight);
+//    if ([self shouldAutorotateToInterfaceOrientation:UIInterfaceOrientationLandscapeLeft])
+//    ret = ret | (1 << UIInterfaceOrientationLandscapeLeft);
+//    
+//    return ret;
+}
+
+
 
 @end

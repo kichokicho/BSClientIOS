@@ -27,28 +27,109 @@ jindo.m.bindPageshow(function(e) {
 	console.log(e);
 });
 
+
+
+
+
+//var longpress;
+//
+//$(".scl_o").on('mousedown' ,function(){      
+// longpress=true;    
+// setTimeout(function() {    
+//    if(longpress)
+//     alert("long press works!");         
+//                  }, 3000);
+//});
+//$(".scl_o").on('mouseup' ,function(){      
+//    longpress=false;    
+//});
+
+
+
+//var timer;
+//var istrue = false;
+//var delay = 1000; // how much long u have to hold click in MS
+//function onMouseDown()
+//{
+//	
+//	console.log('다운이벤트');
+//   istrue = true;
+//   timer = setTimeout(function(){ makeChange();},delay);
+//}
+//function onMouseUp()
+//{
+//	
+//	console.log('업이벤트');
+//   istrue =false;
+//}
+//
+//
+//function makeChange()
+//{
+//      if(timer)
+//      clearTimeout(timer);
+//      
+//      if(istrue)
+//      {
+//            /// rest of your code
+//          alert('holding');
+//
+//      }
+//}
+
+
+$(document).mousedown(function(e){
+  console.log('마우스 다움!!!');
+});   
+$(document).mouseup(function(e){
+    console.log('마우스 온!!!');
+});
+
+
 // pushList Click !!
 function pushLishClick(catecory) {
-	console.log(" 카테고리 start");
+	
+	var startDateTime = new Date();
+    var startDateTimeM= startDateTime.getTime();
+
+    console.log(" 카테고리 start");
 	console.log(catecory);
 	console.log(" 카테고리 end");
-
 	
+	var endDateTime = new Date();
+    var endDateTimeM=endDateTime.getTime();
+    
+	var resultTime=endDateTimeM-startDateTimeM;
+	console.log('클릭 타임 시작');
+	console.log(resultTime);
+    console.log('클릭타임 끝');
 	if (pagesHistory.length == 0) {
 		
 		pagesHistory.push("pages/pushList.html");
 	}
-	
+
 	$("#page-container").load("pages/pushDetail.html", function() {
+		
 		console.log('푸쉬리스트 클릭 1');
 		selectDetail(catecory);
 		console.log('푸쉬리스트 클릭 2');
+		detailJsAdd();
+
 	});
 
+
+	
 }
 
 
 
+
+
+function detailJsAdd() {
+	var element = document.createElement("script");
+	element.src = "js/pages/pushDetail.js";
+	document.body.appendChild(element);
+}
 
 
 // pushList Click !! select Detail query page !!!
@@ -95,17 +176,21 @@ function selectDetail(category) {
 											console.log('메세지수신날짜');
 											console.log(receivedate);
 											console.log('메세지수신날짜');
-											var subReceive=receivedate.substring(0,10);
-											var subnowDate=nowDataResult.substring(0, 10);
-											if(subReceive==subnowDate){
-												console.log('메세지 수신과 현재 날짜가 같아 ');
-												receivedate=receivedate.substring(11,receivedate.length);
-												console.log('시간날짜 초를 보여줌');
-											}else{
-												console.log('메세지 수신과 현재 날짜가 달라 ');
-												receivedate=receivedate.substring(0,10);
-												console.log('년월날 보여줌');
-											}
+//											var subReceive=receivedate.substring(0,10);
+//											var subnowDate=nowDataResult.substring(0, 10);
+//											if(subReceive==subnowDate){
+//												console.log('메세지 수신과 현재 날짜가 같아 ');
+//												receivedate=receivedate.substring(11,receivedate.length);
+//												console.log('시간날짜 초를 보여줌');
+//											}else{
+//												console.log('메세지 수신과 현재 날짜가 달라 ');
+//												receivedate=receivedate.substring(0,10);
+//												console.log('년월날 보여줌');
+//											}
+											var dateyyy=receivedate.substring(0,10);
+											var datetime=receivedate.substring(11,receivedate.length);
+											
+											
 											
 											
 											
@@ -120,6 +205,12 @@ function selectDetail(category) {
 											var decContentText = contentResult.notification.htmlContent;
 											var contentTitle=contentResult.notification.contentTitle;
 											var backImageName = contentResult.notification.imageName;
+											var userPhone=contentResult.notification.userPhone;
+											console.log("user Phone!!!!!")
+											console.log(userPhone);
+											if(userPhone==null||userPhone==""){
+												userPhone="번호없음";
+											}
 											var pollId;
 											if(contentResult.notification.pollID){
 												pollId=contentResult.notification.pollID;
@@ -168,19 +259,26 @@ function selectDetail(category) {
 											// style='text-align:left;margin-left:20px;'>"
 											// + decContentText
 											// + "</div>");
-								
+											console.log("timestart");
+											console.log(dateyyy);
+											console.log("time end");
 											if(category=="설문조사"){
-											$("#cd-timeline")
-											       .append('<div id="'+notiId+'" class="cd-timeline-block"><div class="cd-timeline-img cd-picture"></div><div class="cd-timeline-content"><h2>'+contentTitle+'</h2><div class="'+notiId+'adminData">'+decContentText+'</div><input class="cd-read-more" style="display: none;width:40px; height:40px;" type="checkbox" value="'+notiId+'" name="check_delete"></input><a href="#" onclick="researchRes('+notiId+','+pollId+')" class="cd-read-more">응답</a><span class="cd-date">'+receivedate+'</span></div> </div> ');	
-												
+											var surveyNoid=contentResult.notification.noid;
+											console.log('설문조사 무기명 유무');
+											console.log(surveyNoid);
+											$(".cbp_tmtimeline")
+											       .append('<li id="'+notiId+'"><time class="cbp_tmtime"><span><input type="checkbox" value="'+notiId+'" name="check_delete" style="display:none;" class="mycheckbox"></span><span style="color:#1172b6;">'+dateyyy+'</span> <span>'+datetime+'</span></time><div class="cbp_tmlabel"> <h3>'+contentTitle+'</h3><br/><div class="'+notiId+'adminData">'+decContentText+'</div><a href="#" onclick="researchRes('+notiId+','+pollId+','+surveyNoid+')" class="cd-read-more">응답</a></div></li>');
+				
 										
 											}else{
 												
-											$("#cd-timeline")
-												.append('<div id="'+notiId+'" class="cd-timeline-block"><div class="cd-timeline-img cd-picture"></div><div class="cd-timeline-content"><h2>'+contentTitle+'</h2><div class="'+notiId+'adminData">'+decContentText+'</div><input class="cd-read-more" style="display: none;" type="checkbox" value="'+notiId+'" name="check_delete"></input><span class="cd-date">'+receivedate+'</span></div> </div> ');
-										
+												$(".cbp_tmtimeline")
+											       .append('<li id="'+notiId+'"><time class="cbp_tmtime"><span><input type="checkbox" value="'+notiId+'" name="check_delete" style="display:none;" class="mycheckbox"></span><span style="color:#1172b6;">'+dateyyy+'</span> <span>'+datetime+'</span></time><div class="cbp_tmlabel"> <h3>'+contentTitle+'</h3><br/><div class="'+notiId+'adminData">'+decContentText+'</div><br/><a href="tel:'+userPhone+'" class="cd-read-more phonehover">'+userPhone+'</a></div></li>');
+				
 											}
-											//<a href="#0" class="cd-read-more">Delete</a>
+	
+											
+//											<a href="#0" class="cd-read-more">Delete</a>
 											
 											
 											// p {
@@ -205,19 +303,26 @@ function selectDetail(category) {
 											$("."+notiId+"adminData").css({
 												"background-size" : "cover"
 											});
+											
+											
+//											
+//											$(".cbp_tmtimeline").attr({ scrollTop: $(".cbp_tmtimeline").attr("scrollHeight") });
+//											$(".cbp_tmtimeline").animate({ scrollTop: $(".cbp_tmtimeline").attr("scrollHeight") }, 3000);
 											// $(".rs-content").css({"text-align":"left"});
 											// $(".rs-content").css({"margin-left":"20px"});
 											// $(".rs-content").css({"backgroundPosition":"left
 											// -20px"});
-										
+								
 										}	
-										console.log('메세지 리스트 셀렉트 받아오기끝');
+									
 									}
 								});
 				
 		
 				
 			});
+	
+
 }
 
 

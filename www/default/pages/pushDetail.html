@@ -1,59 +1,117 @@
-
+<link rel="stylesheet" type="text/css" href="css/default.css" />
+<link rel="stylesheet" type="text/css" href="css/component.css" />
+<link rel="stylesheet" href="font-awesome-4.1.0/css/font-awesome.css">
 <style type="text/css">
+#header-wrap {
+	background: #e9f0f5;
+	position: fixed;
+	width: 100%;
+	height: 50px;
+	top: 0;
+	z-index: 1;
+	text-align: center;
+	border-bottom: 1px solid;
+	border-bottom-color: #e7e7e7;
+	padding: 7px;
+	display: inline-block;
+}
+
+@media screen and (orientation:landscape){
+#header-wrap {
+	background: #e9f0f5;
+	position: fixed;
+	width: 100%;
+	height: 50px;
+	top: 0;
+	z-index: 1;
+	text-align: center;
+	border-bottom: 1px solid;
+	border-bottom-color: #e7e7e7;
+	padding: 7px;
+	display: inline-block;
+}
+}
+
+
 .bsMobileMessageI {
 	float: left;
-	margin-left: 15px;
+	margin-left: 7px;
 	color: deepskyblue;
 }
-.deleteOffButton{
+
+.deleteOffButton {
 	float: right;
-	margin-right: 10px;
+	margin-right: 5px;
 	color: deepskyblue;
 }
 
-
-.deleteOnButton{
+.deleteOnButton {
 	float: right;
-	margin-right: 10px;
+	margin-right: 5px;
 	color: deepskyblue;
 }
 
-.fa-envelope{
-color: deepskyblue;
-} 
+.fa-envelope {
+	color: deepskyblue;
 
+}
+
+.cd-read-more {
+	font-size: 13px;
+	font-size: 0.8125rem;
+	float: right;
+	padding: .8em 1em;
+	background: #acb7c0;
+	color: white;
+	border-radius: 0.25em;
+}
+
+.mycheckbox {
+	float: left;
+	width: 30px;
+	height: 30px;
+	background: url('images/checkbox.png');
+}
+
+.mycheckbox:checked {
+	background: url('images/checkbox.png');
+}
+
+#scrollTest {
+	overflow: auto;
+}
 </style>
-<link rel="stylesheet" href="css/detail_reset.css"> <!-- CSS reset -->
-<link rel="stylesheet" href="css/detail_style.css"> <!-- Resource style -->
-<script src="js/modernizr.js"></script> <!-- Modernizr -->
+
+
+
+<div id="header-wrap">
+
+	<span class="bsMobileMessageI" onclick="javascript:backButton();"><i
+		class="fa fa-arrow-circle-left fa-2x"></i></span> <i
+		class="fa fa-envelope fa-2x"></i> <span class="deleteOffButton"><a
+		onclick="javascript:deleteButtonOffFuncton()"><i
+			style="color: deepskyblue;" class="fa fa-check-square-o fa-2x"></i></a></span> <span
+		class="deleteOnButton" style="display: none;"><a
+		onclick="javascript:deleteSelectOnFuncton()"><i
+			style="color: deepskyblue;" class="fa fa-trash-o fa-2x"></i></a></span> <br />
+</div>
+
+<div class="container">
+	<header class="clearfix"> </header>
+	<div id="scrollBottom" class="main">
+		<ul class="cbp_tmtimeline">
+
+		</ul>
+	</div>
+
+	<div id="bottom_div"></div>
+</div>
 
 
 
 
 
 
-
-
-
-
-
-
-    <header>
-    <br/>
-		<span class="bsMobileMessageI" onclick="javascript:backButton();"><i
-				class="fa fa-arrow-circle-left fa-2x"></i></span>
-			<i class="fa fa-envelope fa-2x"></i>
-			<span class="deleteOffButton"><a onclick="javascript:deleteButtonOffFuncton()"><i  style="color:deepskyblue;" class="fa fa-check-square-o fa-2x"></i></a></span>
-			<span class="deleteOnButton" style="display: none; "><a onclick="javascript:deleteSelectOnFuncton()"><i  style="color:deepskyblue;" class="fa fa-trash-o fa-2x"></i></a></span>
-	</header>
-
-	<section id="cd-timeline" class="cd-container">
-
-	</section> 
-
-
-<script type="text/javascript" src="js/pages/pushDetail.js"></script>
-<script type="text/javascript" src="js/pages/timeMain.js"></script>
 
 
 

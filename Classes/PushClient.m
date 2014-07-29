@@ -12,6 +12,7 @@
 static float MQTTINTERVAL = 31.0f;
 static float JOBINTERVAL = 17.0f;
 
+
 @implementation MyAppDelegate
 
 - (id) init
@@ -24,7 +25,6 @@ static float JOBINTERVAL = 17.0f;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions 
 {
-    
     
 //    //번들에 있는 데이터베이스를 복사 - start
 //    [self CopyOfDataBaseIfNeeded];
@@ -42,7 +42,7 @@ static float JOBINTERVAL = 17.0f;
             NSLog(@"allValues : %@",[allValues objectAtIndex:i]);
         }
 
-        application.applicationIconBadgeNumber = 0;
+//        application.applicationIconBadgeNumber = 0;
         
         
 //        NSDictionary *remoteNotificationKeyDictionary = [launchOptions valueForKey:@"UIApplicationLaunchOptionsRemoteNotificationKey"];
@@ -126,10 +126,11 @@ static float JOBINTERVAL = 17.0f;
                             stringByReplacingOccurrencesOfString: @" " withString: @""];
         
         NSLog(@"==== tapnsToken insert : %@", aToken);
-        
+        [[Messenger sharedMessenger] setApnsToken:aToken];
         [pDB insertAPNSToken:aToken];
         
     }else {
+        [[Messenger sharedMessenger] setApnsToken:tapnsToken];
         NSLog(@"====  기존 apnsToken 있음");
     }
     
@@ -145,17 +146,17 @@ static float JOBINTERVAL = 17.0f;
 - (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     NSLog(@"------didReceiveRemoteNotification");
     
-    NSDictionary *apsDictionary = [userInfo valueForKey:@"aps"];
+//    NSDictionary *apsDictionary = [userInfo valueForKey:@"aps"];
+//    
+//    NSString *badge = [apsDictionary objectForKey:@"badge"];
+//    NSLog(@"Badge : %@", badge);
+//    if (badge != nil) {
+//        application.applicationIconBadgeNumber = [badge integerValue];
+//        
+//    }
     
-    NSString *badge = [apsDictionary objectForKey:@"badge"];
-    NSLog(@"Badge : %@", badge);
-    if (badge != nil) {
-        application.applicationIconBadgeNumber = [badge integerValue];
-        
-    }
-    
-    NSString *message = [apsDictionary objectForKey:@"alert"];
-    NSString *messageForm = [apsDictionary valueForKey:@"messageFrom"];
+//    NSString *message = [apsDictionary objectForKey:@"alert"];
+//    NSString *messageForm = [apsDictionary valueForKey:@"messageFrom"];
     //    NSLog(@"Message : %@, form : %@", message, messageForm);
     //    if (message != nil) {
     //        UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:messageForm message:message delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil];
@@ -173,11 +174,12 @@ static float JOBINTERVAL = 17.0f;
     
 //    [self PushProcess:message andMessageForm:messageForm];
     
-    application.applicationIconBadgeNumber = 0;
+//    application.applicationIconBadgeNumber = 0;
     
 }
 
 - (void) application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
+    NSLog(@"====  didReceiveLocalNotification");
     //    NSDictionary *userInfo = notification.userInfo;
 //    NSString *alertBody = notification.alertBody;
 //    NSDictionary *pushInfo = notification.userInfo;
@@ -195,7 +197,7 @@ static float JOBINTERVAL = 17.0f;
 
     
 //    [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(javascriptCall) userInfo:nil repeats:NO];
-    application.applicationIconBadgeNumber = 0;
+//    application.applicationIconBadgeNumber = 0;
     
 }
 
@@ -235,7 +237,7 @@ static float JOBINTERVAL = 17.0f;
 //    
 //    NSArray *test = [[Messenger sharedMessenger] subscriptionData];
     
-     [pDB getMessageList];
+//     [pDB getMessageList];
     
 //    if (topicList.count > 0) {
 //        NSLog(@"===== tesPr2 : %lu",(unsigned long)test.count);
@@ -268,7 +270,17 @@ static float JOBINTERVAL = 17.0f;
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     NSLog(@"Background로 인해 클라이언트를종료합니다.");
-    [[Messenger sharedMessenger] disconnectWithTimeout:1];
+    
+    // icon Badge  - start
+    PushDataBase *pDB = [[Messenger sharedMessenger] pDB];
+    [[Messenger sharedMessenger] setMqttConnReset:TRUE];
+    int count = [pDB getMessageUnReadCount];
+    application.applicationIconBadgeNumber = count;
+    
+//    [self badgeSend];
+    // icon Badge  - end
+    
+//    [[Messenger sharedMessenger] disconnectWithTimeout:1];
     
 	NSString *result = [super.viewController.webView stringByEvaluatingJavaScriptFromString:@"WL.App.BackgroundHandler.onAppEnteringBackground();"];
 	if([result isEqualToString:@"hideView"]){
@@ -283,12 +295,12 @@ static float JOBINTERVAL = 17.0f;
 		[[self.viewController view] setHidden:NO];
 	}
     
-    [self backgroundMQTTConection];
+//    [self mqttConn];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application 
 {
-    application.applicationIconBadgeNumber = 0;
+//    application.applicationIconBadgeNumber = 0;
 	[super applicationDidBecomeActive:application];
     /*
      * If you need to do any extra app-specific stuff, you can do it here.
@@ -339,22 +351,33 @@ static float JOBINTERVAL = 17.0f;
     
     
     [self userRead];
-    NSString  *clientID = [[Messenger sharedMessenger] clientID];
+    NSString  *clientID = [[Messenger sharedMessenger] clientId];
     
     if (clientID != NULL) {
         
         MqttClient *mClient = [[Messenger sharedMessenger] client];
         
         
-        
-        if ([mClient isConnected]) {
-            
-            NSLog(@"===== MQTT Connected");
-            
-        } else {
-            NSLog(@"===== not Client => Connect try");
+        if ([[Messenger sharedMessenger] mqttConnReset]) {
+            NSLog(@"===== Background -> Forground => Connect try");
             [self mqttConn];
+            [[Messenger sharedMessenger] setMqttConnReset:FALSE];
+
+        } else {
+            if ([mClient isConnected]) {
+                
+                NSLog(@"===== MQTT Connected");
+                
+            } else {
+                NSLog(@"===== not Client => Connect try");
+                [self mqttConn];
+            }
         }
+        
+        
+        
+        //badge Info send to server
+//        [self badgeSend];
 
     }
     
@@ -371,7 +394,7 @@ static float JOBINTERVAL = 17.0f;
     
     NSArray *servers = [[NSArray alloc] initWithObjects:@"adflow.net", nil];
     NSArray *ports = [[NSArray alloc] initWithObjects:@"8883", nil];
-    NSString  *clientID = [[Messenger sharedMessenger] clientID];
+    NSString  *clientID = [[Messenger sharedMessenger] clientId];
     //    clientID = @"test12345";
     
     [[Messenger sharedMessenger] connectWithHosts:servers ports:ports clientId:clientID cleanSession:FALSE];
@@ -380,6 +403,33 @@ static float JOBINTERVAL = 17.0f;
     [NSTimer scheduledTimerWithTimeInterval:6.0f target:self selector:@selector(mqttSubscribe) userInfo:nil repeats:NO];
     
 }
+
+
+//badgeProcess
+- (void) badgeSend {
+    
+    // 읽지 않는 메세지 개수를 서버에 보냄 - start
+    PushDataBase *pDB = [[Messenger sharedMessenger] pDB];
+    MqttClient *mClient = [[Messenger sharedMessenger] client];
+    NSString *userID = [[Messenger sharedMessenger] userID];
+    NSString *deviceId = [[Messenger sharedMessenger] apnsToken];
+    
+    int count = [pDB getMessageUnReadCount];
+    
+    NSMutableString *payload = [[NSMutableString alloc]init];
+    [payload appendFormat:@"{\"userID\":\"%@\",\"deviceID\":\"%@\",\"unRead\":%d}",userID, deviceId, count];
+    
+    
+    mClient = [[Messenger sharedMessenger] client];
+    if ([mClient isConnected]) {
+        //PUBLISH
+        [[Messenger sharedMessenger] publish:@"/push/badge" payload:payload qos:2 retained:FALSE];
+        NSLog(@"메시지를전송하였습니다. 메시지=%@",payload);
+    }
+    // 읽지 않는 메세지 개수를 서버에 보냄 - end
+    
+}
+
 
 - (void) mqttSubscribe {
 
@@ -481,7 +531,7 @@ static float JOBINTERVAL = 17.0f;
     
     if (user != NULL && user.userid != nil) {
         
-        NSString  *clientID = [[Messenger sharedMessenger] clientID];
+        NSString  *clientID = [[Messenger sharedMessenger] clientId];
         
         if (clientID != nil) {
             if (!([clientID isEqual:user.tokenid])) {
@@ -519,7 +569,7 @@ static float JOBINTERVAL = 17.0f;
         }
         
         [[Messenger sharedMessenger] setUserID:user.userid];
-        [[Messenger sharedMessenger] setClientID:user.tokenid];
+        [[Messenger sharedMessenger] setClientId:user.tokenid];
         
         
     }else{

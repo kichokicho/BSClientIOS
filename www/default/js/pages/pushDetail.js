@@ -1,5 +1,16 @@
 
 
+$(function(){
+        if(iphonebadgeCheck&&devicePlatform==="iOS"){
+        console.log('업데이트시 아이폰 코도바 플러그인 호출 ');
+        cordova.exec(badgeSendSuccess, badgeSendFailure, "BadgeSendPlugin", "badgeSend", []);
+        
+        //											iphonebadgeCheck=false;
+        }
+        
+        iphonebadgeCheck=false;
+});
+
 $("img").click(function(){
 	var imageSource=$(this).attr('src');
 	 var imageWidth =$(this).css("width");
@@ -202,14 +213,15 @@ function researchInsert(researchResult,notiId,pollId,researchInt,surveyNoid){
 						if (deleteResult !== 0) {
 								$('#' + notiId).remove();
 								console.log('in for end');
-							var divTagLength = $('.cd-timeline-block').length;
+							var divTagLength = $('.cbp_tmtimeline li').length;
 							console.log('divTagLength 테그의 길이가 영이냐?');
 							console.log(divTagLength);
 							console.log('divTagLength 테그의 길이가 영이냐?');
 							if (divTagLength == 0) {
-								$('#cd-timeline')
+								console.log('영입니다.');
+								$('.cbp_tmtimeline')
 										.html(
-												'<br/><br/><br/><p style="text-align:center;color:#1172b6;">수신된 메세지가 없습니다.</p>');
+												'<br/><p style="text-align:center;color:#1172b6;">수신된 메세지가 없습니다.</p>');
 							}
 
 							console.log("메세지  삭제 !!!!!!!");
@@ -271,15 +283,16 @@ function multiDelete(notiid) {
 													$('[name=check_delete]')
 															.hide();
 												});
-
-										var divTagLength = $('.cd-timeline-block').length;
-										console.log('divTagLength 테그의 길이가 영이냐?');
+										
+										var divTagLength = $('.cbp_tmtimeline li').length;
+										console.log('cbp_tmtimeline 테그의 길이가 영이냐?');
 										console.log(divTagLength);
-										console.log('divTagLength 테그의 길이가 영이냐?');
+										console.log('cbp_tmtimeline 테그의 길이가 영이냐?');
 										if (divTagLength == 0) {
-											$('#cd-timeline')
+											console.log('영입니다');
+											$('.cbp_tmtimeline')
 													.html(
-															'<br/><br/><br/><p style="text-align:center;color:#1172b6;">수신된 메세지가 없습니다.</p>');
+															'<br/><p style="text-align:center;color:#1172b6;">수신된 메세지가 없습니다.</p>');
 										}
 
 										console.log("메세지 다중 삭제 !!!!!!!");
@@ -406,78 +419,120 @@ function backButton() {
 function pageBack() {
 	var db = window.sqlitePlugin.openDatabase({name : "PushDB"});
 	db.transaction(function(tx) {
-		 tx.executeSql("select * from message  where type=0 or type=1 or type=2 or type=3 group by category order  by datetime(receivedate)  desc ;",[],
-						function(tx, res) {
-							var selectLength = res.rows.length;
-							var htmlTagli="";
-							//메세지가 없을때 
-							if(selectLength==0){
-							   htmlTagli=htmlTagli.concat("<br/><br/><br/><p style='text-align:center;color:#1172b6;'>수신된 메세지가 없습니다.</p>");
-								$(".ul_pushList").html(htmlTagli);
-							//수신된 메세지가 있을때
+		
+//		tx.executeSql("select *, SUM(case when read=0 then 1 else 0 end) as total from message where type=0 or type=1 or type=2 or type=3 group by category ",[],
+//				function(tx, res) {
+//					var selectLength = res.rows.length;
+//				
+//					//메세지가 없을때 						
+//					if(selectLength==0){
+//						
+//						console.log('query length is 0..');
+//						console.log(res.rows.item(0).total);
+//					}else{
+//									
+//						console.log('quer Conunt 리절트 시작');
+//						console.log(res.rows.item(0).total);
+//						console.log(res.rows.item(0).total);
+//						console.log('quer Conunt 리절트 시작');  
+//				
+//					}
+//					
+//
+//							});
+		
+        //SUM(read)
+		tx.executeSql("select * , SUM(read) as total from message where type=0 or type=1 or type=2 or type=3 group by category order  by datetime(receivedate) desc ;",[],
+					function(tx, res) {
+						var selectLength = res.rows.length;
+						var htmlTagli="";
+						//메세지가 없을때 						
+						if(selectLength==0){
+							htmlTagli=htmlTagli.concat("<br/><br/><br/><p style='text-align:center;color:#1172b6;'>수신된 메세지가 없습니다.</p>");
+							$(".ul_pushList").html(htmlTagli);
+						//수신된 메세지가 있을때
+						}else{
+										
+						for (var i = 0; i < selectLength; i++) {
+								var contentResult = res.rows.item(i).content;
+								console.log('그룹바이 리절트 시작');
+								console.log(contentResult);
+								console.log('그룹바이 리절트 끝');
+								var notiID = res.rows.item(i).id;
+								var receivedate=res.rows.item(i).receivedate;
+								var category=res.rows.item(i).category;
+								var total=res.rows.item(i).total;
+								console.log('total');
+								console.log(total);
+								console.log('total');
+								console.log('카테고리시작 ');
+								console.log(category);
+								console.log('카테고리 끝');
+								console.log('메세지수신날짜');
+								console.log(receivedate);
+								console.log('메세지수신날짜');
+								var subReceive=receivedate.substring(0,10);
+								var subnowDate=nowDataResult.substring(0, 10);
+								if(subReceive==subnowDate){
+									console.log('메세지 수신과 현재 날짜가 같아 ');
+									receivedate=receivedate.substring(11,receivedate.length);
+									console.log('시간날짜 초를 보여줌');
 								}else{
-														
-								for (var i = 0; i < selectLength; i++) {
-										var contentResult = res.rows.item(i).content;
-										var notiID = res.rows.item(i).id;
-										var receivedate=res.rows.item(i).receivedate;
-										console.log('메세지수신날짜');
-										console.log(receivedate);
-										console.log('메세지수신날짜');
-										var category=res.rows.item(i).category;
-										console.log('카테고리시작 ');
-										console.log(category);
-										console.log('카테고리 끝');
-										var subReceive=receivedate.substring(0,10);
-										var subnowDate=nowDataResult.substring(0, 10);
-										if(subReceive==subnowDate){
-											console.log('메세지 수신과 현재 날짜가 같아 ');
-											receivedate=receivedate.substring(11,receivedate.length);
-											console.log('시간날짜 초를 보여줌');
-										}else{
-											console.log('메세지 수신과 현재 날짜가 달라 ');
-											receivedate=receivedate.substring(0,10);
-											console.log('년월날 보여줌');
-										}
-										console.log("노티피케이션 아이디");
-										console.log(notiID);
-										console.log("노티피케이션 아이디 끝");
-										contentResult = JSON.parse(contentResult);
-										console.log(contentResult.notification.ticker);
-										console.log(contentResult.notification.contentText);
-									    var contentText=contentResult.notification.contentText;
-									    if(contentText.length>20){
-									     	  contentText=contentText.substring(0, 18);
-										      contentText=contentText.concat('...');
-									    }
-										 var newItag="";
-											if(res.rows.item(i).read==1){
-												
-											newItag='style="display: none;"';
-											
-											}else{
-												newItag='';
-											}
-											
-											console.log("htmlstart");
-											console.log(newItag);
-											console.log("htmlend");
-										 
-										htmlTagli=htmlTagli.concat('<li class="scl_o"><p class="scl_tmb"><br /> </p><a id="'+category+'" href="#"  onclick="javascript:pushLishClick(this.id);"><p class="scl_cnt"><span class="scl_messageTitle">'
-												+ category
-												+ '</span><br> <span class="scl_textContent">'
-												+ contentText
-												+ '</span><span class="scl_date" id="'+category+'">'+receivedate+'&nbsp;&nbsp;<i '+newItag+' class="fa fa-comment fa-2x"></i></span></p></a></li>');
-							                      
-								                    }      
-								console.log("완성된 html start");
-								console.log(htmlTagli);
-								console.log("완성된 html end");
-								$(".ul_pushList").html(htmlTagli);
-								oScroll.refresh();
-								console.log('메세지 리스트 셀렉트 받아오기끝');
-								}		
-							});
+									console.log('메세지 수신과 현재 날짜가 달라 ');
+									receivedate=receivedate.substring(0,10);
+									console.log('년월날 보여줌');
+								}
+								console.log("노티피케이션 아이디");
+								console.log(notiID);
+								console.log("노티피케이션 아이디 끝");
+								contentResult = JSON.parse(contentResult);
+								console.log(contentResult.notification.ticker);
+								console.log(contentResult.notification.contentText);
+								var contentText=contentResult.notification.contentText;
+								 if(contentText.length>20){
+								     	contentText=contentText.substring(0, 18);
+									    contentText=contentText.concat('...');
+								  }
+								 var styleNonetag="";
+								 if(total==0 ||total==null){
+									 console.log('토탈이 0');
+									 styleNonetag='style="display: none;"';
+								 }else{
+									 styleNonetag="";
+								 }
+//								 var newItag="";
+//									if(res.rows.item(i).read==1){
+//										
+//									newItag='style="display: none;"';
+//									
+//									}else{
+//										newItag='';
+//										console.log('리드가 0인거');
+//									}
+									
+//									console.log("htmlstart");
+//									console.log(newItag);
+//									console.log("htmlend");
+								 
+									htmlTagli=htmlTagli.concat('<li class="scl_o" data-val="'+category+'"><p class="scl_tmb"><br /> </p><a class="acategory" id="'+category+'" href="#"   onclick="javascript:pushLishClick(this.id);"><p class="scl_cnt"><span><input type="checkbox" value="'+category+'" name="check_catedelete" style="display:none;" class="cateListcheckBox"></span><span class="scl_messageTitle">'
+											+ category
+											+ '</span><br> <span class="scl_textContent">'
+											+ contentText
+											+ '</span><span class="scl_date" >'+receivedate+'&nbsp;&nbsp;<span '+styleNonetag+' class="badge">'+total+'</span></span></p></a></li>');
+					                     
+							
+						}    
+						console.log("완성된 html start");
+						console.log(htmlTagli);
+						console.log("완성된 html end");
+						$(".ul_pushList").html(htmlTagli);
+						
+						oScroll.refresh();
+						console.log('메세지 리스트 셀렉트 받아오기끝');
+						}
+						
+
+								});
 					});
 			
 }

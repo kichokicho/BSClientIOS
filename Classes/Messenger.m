@@ -123,6 +123,7 @@
 - (void) onConnectionLost:(NSObject*)invocationContext errorMessage:(NSString*)errorMessage
 {
     [[[Messenger sharedMessenger] subscriptionData] removeAllObjects];
+    NSLog(@"errorMessage :%@", errorMessage);
 //    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
 //    [appDelegate updateConnectButton];
 //    [appDelegate reloadSubscriptionList];
@@ -147,6 +148,11 @@
     MappingJson *mJson = [[MappingJson alloc]init];
     NSString *userid = [[Messenger sharedMessenger] userID];
     MessageBean *messageBean = [mJson messageToObjectMapping:payload userID:userid];
+    
+    if (messageBean == NULL) {
+        return;
+    }
+    
     NSMutableString *tmpMS = [[NSMutableString alloc]init];
 //    PushDataBase *pDB = [[PushDataBase alloc]init];
     PushDataBase *pDB = [[Messenger sharedMessenger] pDB];
@@ -160,12 +166,17 @@
 //    UIWebView *pWebView = [[Messenger sharedMessenger] pWebView];
     NSMutableString *javascriptFuntion = [[NSMutableString alloc]init];
     NSDate *today;
-    NSDate *dateNoti;
-
+//    NSDate *dateNoti;
+    
+    NSMutableString *sendDate;
+    NSDateFormatter *formatter;
+    NSDate *pSendDate;
+    NSDate *pSendDateAddOneDay;
+    
     
     @try {
         // Message Insert
-        [pDB insertMessage:messageBean];
+//        [pDB insertMessage:messageBean];
         
         
         switch (messageBean.type) {
@@ -174,6 +185,9 @@
 			case 2: // 그룹메시지(계열사)
 			case 3: // 그룹메시지(부서)
 			case 4: // 그룹메시지(직급)
+                
+                messageBean.read = 1;
+                [pDB insertMessage:messageBean];
                 if (messageBean.ack) {
                     [tmpMS appendFormat:@"{\"userID\":\"%@\",\"id\":%d}",userid, messageBean.id];
                     [job setType:0]; //PUBLISH
@@ -183,35 +197,64 @@
                     [pDB insertJob:job];
                 }
                 
-                
+                // WebView Load Finish Check
+                if (!([[Messenger sharedMessenger] webViewLoadFinish])) {
+                    NSLog(@"WebView가 아직 로드 되지 않았습니다.");
+                    break;
+                }
                 // Local Notification - start
-                dContent = [jUtil jSonToObject:messageBean.content];
-                pushInfo = [NSDictionary dictionaryWithObjectsAndKeys:messageBean.category,@"category", nil];
-                localNotif.timeZone = [NSTimeZone defaultTimeZone];
-
                 
-                //javacript call name
-                [javascriptFuntion appendFormat:@"refreshFunction('%@')",messageBean.category];
-                localNotif.alertBody = javascriptFuntion;
-//                localNotif.alertBody = dContent[@"notification"][@"contentTitle"];
-
-                localNotif.alertAction = @"AlertAction";
-                localNotif.soundName = UILocalNotificationDefaultSoundName;
-                localNotif.applicationIconBadgeNumber = 1;
-                localNotif.userInfo = pushInfo;
-                // 5초 후 시간 계산 - start
                 today = [NSDate date];
-                dateNoti = [NSDate dateWithTimeInterval:5 sinceDate:today];
-                // 10초 후 시간 계산 - end
-                localNotif.fireDate = dateNoti;
+                sendDate = [[NSMutableString alloc]init];
+                [sendDate appendFormat:@"%@ +0900",messageBean.sendDate];
+                NSLog(@"======== sendDate:  %@", sendDate);
                 
+                formatter = [[NSDateFormatter alloc] init];
+                [formatter setDateFormat:@"yyyy.MM.dd HH:mm:ss Z"];
+                
+                pSendDate = [[NSDate alloc] init];
+                pSendDate = [formatter dateFromString:sendDate];
+                NSLog(@"======== pSendDate:  %@", [pSendDate description]);
+                
+                // sendDate + 1 Day (24 * 3600 = 86400
+                pSendDateAddOneDay = [NSDate dateWithTimeInterval:86400 sinceDate:pSendDate];
+                NSLog(@"======== pSendDateAddOneDay:  %@", [pSendDateAddOneDay description]);
+                
+                // 두 날짜 비교 Compare
+                NSComparisonResult compareResult = [today compare:pSendDateAddOneDay];
+                if(compareResult == -1) {
+                    NSLog(@"=======   today < pSendDateAddOneDay");
+                    dContent = [jUtil jSonToObject:messageBean.content];
+                    pushInfo = [NSDictionary dictionaryWithObjectsAndKeys:messageBean.category,@"category", nil];
+                    localNotif.timeZone = [NSTimeZone defaultTimeZone];
+                    
+                    
+                    //javacript call name
+                    [javascriptFuntion appendFormat:@"refreshFunction('%@')",messageBean.category];
+                    localNotif.alertBody = javascriptFuntion;
+                    //                localNotif.alertBody = dContent[@"notification"][@"contentTitle"];
+                    
+                    localNotif.alertAction = @"AlertAction";
+                    localNotif.soundName = UILocalNotificationDefaultSoundName;
+//                    localNotif.applicationIconBadgeNumber = 0;
+                    localNotif.userInfo = pushInfo;
+                    //                // 5초 후 시간 계산 - start
+                    //                today = [NSDate date];
+                    //                dateNoti = [NSDate dateWithTimeInterval:5 sinceDate:today];
+                    //                // 10초 후 시간 계산 - end
+                    
+//                    localNotif.fireDate = dateNoti;
+                    
+                    
+                    //                [[UIApplication sharedApplication] scheduleLocalNotification:localNotif];
+                    [[UIApplication sharedApplication] presentLocalNotificationNow:localNotif];
+                    // Local Notification - end
+                    
+                    //                [pWebView stringByEvaluatingJavaScriptFromString:@"test()"];
+                    //                NSLog(@"=============  javascript Call ");
 
-                [[UIApplication sharedApplication] scheduleLocalNotification:localNotif];
-//                [[UIApplication sharedApplication] presentLocalNotificationNow:localNotif];
-                // Local Notification - end
+                }
                 
-//                [pWebView stringByEvaluatingJavaScriptFromString:@"test()"];
-//                NSLog(@"=============  javascript Call ");
                 
                 break;
             case 100:
@@ -220,6 +263,9 @@
                 
                 
                 //기존 topic 가져와 unsubscribe 처리 - start
+                messageBean.read = 0;
+                [pDB insertMessage:messageBean];
+                
                 subscribeList = [[Messenger sharedMessenger] subscriptionData];
                 for (int i=0; i < subscribeList.count; i++) {
                     
@@ -251,6 +297,9 @@
             case 101:
                 // command msg
                 // (토픽=/users/nadir93,메시지={"id":5,"ack":false,"type":1,"content":{"userID":"nadir93","groups":["dev","adflow"]}},qos=2)
+                messageBean.read = 0;
+                [pDB insertMessage:messageBean];
+                
                 
                 dContent = [jUtil jSonToObject:messageBean.content];
                 
@@ -272,15 +321,13 @@
                 break;
         }
 
+
     }
     @catch (NSException *exception) {
         NSLog(@"onMessageArrived exceptionName %@, reason %@", [exception name], [exception reason]);
     }
-
-
-    
-    
 }
+
 - (void) onMessageDelivered:(NSObject*)invocationContext messageId:(int)msgId
 {
     NSLog(@"GeneralCallbacks - onMessageDelivered!");
@@ -306,13 +353,16 @@
 - (id)init {
     if (self = [super init]) {
         self.client = [MqttClient alloc];
-        self.clientID = nil;
+        self.clientId = nil;
         self.userID = nil;
         self.pDB = [[PushDataBase alloc]init];
         self.client.callbacks = [[GeneralCallbacks alloc] init];
 //        self.logMessages = [[NSMutableArray alloc] init];
         self.SubscriptionData = [[NSMutableArray alloc] init];
         self.pWebView = [UIWebView alloc];
+        self.webViewLoadFinish = FALSE;
+        self.apnsToken = nil;
+        self.mqttConnReset = FALSE;
     }
     return self;
 }

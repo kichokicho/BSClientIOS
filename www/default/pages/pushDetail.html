@@ -33,21 +33,21 @@
 }
 
 
-.bsMobileMessageI {
+.bsMobileMessageDetailI {
 	float: left;
-	margin-left: 7px;
+/* 	margin-left: 7px; */
 	color: deepskyblue;
 }
 
 .deleteOffButton {
 	float: right;
-	margin-right: 5px;
+/* 	margin-right: 5px; */
 	color: deepskyblue;
 }
 
 .deleteOnButton {
 	float: right;
-	margin-right: 5px;
+/* 	margin-right: 5px; */
 	color: deepskyblue;
 }
 
@@ -66,19 +66,26 @@
 	border-radius: 0.25em;
 }
 
-.mycheckbox {
+.detailcheckbox {
 	float: left;
 	width: 30px;
 	height: 30px;
-	background: url('images/checkbox.png');
+/* 	BACKGROUND: URL('IMAGES/CHECKBOX.PNG'); */
 }
 
-.mycheckbox:checked {
-	background: url('images/checkbox.png');
-}
+/* .mycheckbox:checked { */
+/* 	background: url('images/checkbox.png'); */
+/* } */
 
 #scrollTest {
 	overflow: auto;
+}
+
+.categoryTitle{
+	color: deepskyblue;
+	font-size: large;
+	font-weight: bold;
+	
 }
 </style>
 
@@ -86,9 +93,8 @@
 
 <div id="header-wrap">
 
-	<span class="bsMobileMessageI" onclick="javascript:backButton();"><i
-		class="fa fa-arrow-circle-left fa-2x"></i></span> <i
-		class="fa fa-envelope fa-2x"></i> <span class="deleteOffButton"><a
+	<span class="bsMobileMessageDetailI" onclick="javascript:backButton();"><i
+		class="fa fa-arrow-circle-left fa-2x"></i></span>  <span class="deleteOffButton"><a
 		onclick="javascript:deleteButtonOffFuncton()"><i
 			style="color: deepskyblue;" class="fa fa-check-square-o fa-2x"></i></a></span> <span
 		class="deleteOnButton" style="display: none;"><a

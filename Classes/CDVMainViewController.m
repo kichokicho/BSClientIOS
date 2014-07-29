@@ -69,6 +69,7 @@
     
     //WebView save
     [[Messenger sharedMessenger] setPWebView:self.webView];
+    [[Messenger sharedMessenger] setWebViewLoadFinish:TRUE];
 
 //    [self.webView stringByEvaluatingJavaScriptFromString:@"(function() { console.log('네이티브22 콜 성공'); }) ()"];
 //    [self.webView stringByEvaluatingJavaScriptFromString:@"test()"];
@@ -122,28 +123,35 @@
  }
  */
 
-//#pragma mark CDVOrientationDelegate
--(BOOL)shouldAutorotate
-{
-    return YES;
-}
+////#pragma mark CDVOrientationDelegate
+//-(BOOL)shouldAutorotate
+//{
+//    return YES;
+//}
+//
+//-(NSUInteger)supportedInterfaceOrientations {
+//    return UIInterfaceOrientationMaskAll;
+//
+//}
 
--(NSUInteger)supportedInterfaceOrientations {
-    return UIInterfaceOrientationMaskAll;
-//    NSUInteger ret = 0;
-//    
-//    if ([self shouldAutorotateToInterfaceOrientation:UIInterfaceOrientationPortrait])
-//    ret = ret | (1 << UIInterfaceOrientationPortrait);
-//    if ([self shouldAutorotateToInterfaceOrientation:UIInterfaceOrientationPortraitUpsideDown])
-//    ret = ret | (1 << UIInterfaceOrientationPortraitUpsideDown);
-//    if ([self shouldAutorotateToInterfaceOrientation:UIInterfaceOrientationLandscapeRight])
-//    ret = ret | (1 << UIInterfaceOrientationLandscapeRight);
-//    if ([self shouldAutorotateToInterfaceOrientation:UIInterfaceOrientationLandscapeLeft])
-//    ret = ret | (1 << UIInterfaceOrientationLandscapeLeft);
-//    
-//    return ret;
-}
 
+//- (void)viewWillAppear:(BOOL)animated
+//{
+//    // View defaults to full size. If you want to customize the view's size, or its subviews (e.g. webView),
+//    // you can do so here.
+//    
+//    // handle iOS 7 transparent status bar
+//    // according to http://stackoverflow.com/questions/19209781/ios-7-status-bar-with-phonegap
+//    //Lower screen 20px on ios 7
+//    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7) {
+//        CGRect viewBounds = [self.webView bounds];
+//        viewBounds.origin.y = 20;
+//        viewBounds.size.height = viewBounds.size.height - 20;
+//        self.webView.frame = viewBounds;
+//    }
+//    
+//    [super viewWillAppear:animated];
+//}
 
 
 @end

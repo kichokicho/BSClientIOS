@@ -23,9 +23,10 @@
     
     NSString *content = [jUil objectToJSon:dMessage[@"content"]];
     NSString *category = dMessage[@"category"];
+    NSString *sendDate = dMessage[@"sendDate"];
     
     NSDateFormatter *dateFormat=[[NSDateFormatter alloc] init];
-    [dateFormat setDateFormat:@"yyyy-MM-dd hh:mm:ss:SS"];
+    [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     NSDate *now = [NSDate date]; //현재 날짜로 객체 생성
 
     @try {
@@ -35,8 +36,9 @@
         [pMessage setType:[dMessage[@"type"] intValue]];
         [pMessage setContent:content];
         [pMessage setReceivedate:[dateFormat stringFromDate:now]];
-        [pMessage setRead:0];
+        [pMessage setRead:1];
         [pMessage setCategory:category];
+        [pMessage setSendDate:sendDate];
      }
     @catch (NSException *exception) {
         NSLog(@"Mapping exceptionName %@, reason %@", [exception name], [exception reason]);

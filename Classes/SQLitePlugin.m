@@ -8,6 +8,7 @@
 
 #import "SQLitePlugin.h"
 #include <regex.h>
+#include "Messenger.h"
 
 
 //LIBB64
@@ -260,35 +261,50 @@ static void sqlite_regexp(sqlite3_context* context, int argc, sqlite3_value** va
                             } else {
                                 NSLog(@"user 테이블 생성이 실패 되었습니다.");
                             }
-                            b = sqlite3_exec(db, (const char*)"CREATE TABLE topic (userid TEXT, topic TEXT, subscribe INTEGER, PRIMARY KEY(userid, topic));", NULL, NULL, NULL);
-                            if (createOK == 0) {
-                                NSLog(@"topic 테이블 생성이 완료 되었습니다.");
-                            } else {
-                                NSLog(@"topic 테이블 생성이 실패 되었습니다.");
-                            }
-                            b = sqlite3_exec(db, (const char*)"CREATE TABLE message (id integer, userid text, ack integer,type integer, content text, receivedate text, category TEXT, read INTEGER, primary key (id, userid));", NULL, NULL, NULL);
-                            if (createOK == 0) {
-                                NSLog(@"message 테이블 생성이 완료 되었습니다.");
-                            } else {
-                                NSLog(@"message 테이블 생성이 실패 되었습니다.");
-                            }
-                            b = sqlite3_exec(db, (const char*)"CREATE TABLE job ( id INTEGER PRIMARY KEY AUTOINCREMENT, type INTEGER, topic TEXT, content TEXT);", NULL, NULL, NULL);
-                            if (createOK == 0) {
-                                NSLog(@"job 테이블 생성이 완료 되었습니다.");
-                            } else {
-                                NSLog(@"job 테이블 생성이 실패 되었습니다.");
-                            }
-                            b = sqlite3_exec(db, (const char*)"CREATE TABLE apnstoken (tokenid text primary key);", NULL, NULL, NULL);
+                            createOK = sqlite3_exec(db, (const char*)"CREATE TABLE device (id text primary key);", NULL, NULL, NULL);
                             if (createOK == 0) {
                                 NSLog(@"apnstoken 테이블 생성이 완료 되었습니다.");
                             } else {
                                 NSLog(@"apnstoken 테이블 생성이 실패 되었습니다.");
                             }
+                            createOK = sqlite3_exec(db, (const char*)"CREATE TABLE topic (userid TEXT, topic TEXT, subscribe INTEGER, PRIMARY KEY(userid, topic));", NULL, NULL, NULL);
+                            if (createOK == 0) {
+                                NSLog(@"topic 테이블 생성이 완료 되었습니다.");
+                            } else {
+                                NSLog(@"topic 테이블 생성이 실패 되었습니다.");
+                            }
+                            createOK = sqlite3_exec(db, (const char*)"CREATE TABLE message (id integer, userid text, ack integer,type integer, content text, receivedate text, category TEXT, read INTEGER, primary key (id, userid));", NULL, NULL, NULL);
+                            if (createOK == 0) {
+                                NSLog(@"message 테이블 생성이 완료 되었습니다.");
+                            } else {
+                                NSLog(@"message 테이블 생성이 실패 되었습니다.");
+                            }
+                            createOK = sqlite3_exec(db, (const char*)"CREATE TABLE job ( id INTEGER PRIMARY KEY AUTOINCREMENT, type INTEGER, topic TEXT, content TEXT);", NULL, NULL, NULL);
+                            if (createOK == 0) {
+                                NSLog(@"job 테이블 생성이 완료 되었습니다.");
+                            } else {
+                                NSLog(@"job 테이블 생성이 실패 되었습니다.");
+                            }
+                            
+                            
+                            NSString *apnsToken = [[Messenger sharedMessenger] apnsToken];
+                            NSMutableString *sql = [[NSMutableString alloc]init];
+                            [sql appendFormat:@"INSERT INTO device(id) VALUES('%@');",apnsToken];
+                            NSLog(@"APNSToken SQL : %@", sql );
+                            const char *sql2 = [sql UTF8String];
+                            //createOK = sqlite3_exec(db, (const char*)sql, NULL, NULL, NULL);
+                            createOK = sqlite3_exec(db, sql2, NULL, NULL, NULL);
+                            if (createOK == 0) {
+                                NSLog(@"Device id 추가가 완료 되었습니다.");
+                            } else {
+                                NSLog(@"Device id 추가가 실패 되었습니다.");
+                            }
+                            
+
 
                         }
                         
-//                        b = sqlite3_exec(db, (const char*)"CREATE TABLE IF NOT EXISTS test_table (id integer primary key, data text, data_num integer);", NULL, NULL, NULL);
-//                        c = sqlite3_exec(db, (const char*)"SELECT count(*) FROM test_table;", NULL, NULL, NULL);
+
                         
                     }
                     @catch (NSException *exception) {

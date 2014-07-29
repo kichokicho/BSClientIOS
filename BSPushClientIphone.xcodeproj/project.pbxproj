@@ -44,6 +44,7 @@
 		2209C0921961CD110004B551 /* SBJsonStreamWriterState.m in Sources */ = {isa = PBXBuildFile; fileRef = 2209C0871961CD110004B551 /* SBJsonStreamWriterState.m */; };
 		2209C0931961CD110004B551 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2209C0891961CD110004B551 /* SBJsonWriter.m */; };
 		22136C9C1973950E00F71A86 /* libiosMQTT.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22136C9B1973950E00F71A86 /* libiosMQTT.a */; };
+		22B6AD231987C69100E44AEA /* BadgeSendPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 22B6AD221987C69100E44AEA /* BadgeSendPlugin.m */; };
 		2710065116A09DEF0072351B /* Localizations.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2710065016A09DEF0072351B /* Localizations.bundle */; };
 		2710067116A09DEF0072351B /* CDVCapture.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2710067016A09DEF0072351B /* CDVCapture.bundle */; };
 		2710069116A09DEF0072351B /* CDVNotification.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2710069016A09DEF0072351B /* CDVNotification.bundle */; };
@@ -174,6 +175,8 @@
 		2209C0891961CD110004B551 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
 		22136C9B1973950E00F71A86 /* libiosMQTT.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libiosMQTT.a; sourceTree = "<group>"; };
 		228614B61961978400C000EF /* MqttOCClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MqttOCClient.h; sourceTree = "<group>"; };
+		22B6AD211987C69100E44AEA /* BadgeSendPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BadgeSendPlugin.h; sourceTree = "<group>"; };
+		22B6AD221987C69100E44AEA /* BadgeSendPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BadgeSendPlugin.m; sourceTree = "<group>"; };
 		2710065016A09DEF0072351B /* Localizations.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Localizations.bundle; path = Resources/Localizations.bundle; sourceTree = "<group>"; };
 		2710067016A09DEF0072351B /* CDVCapture.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = CDVCapture.bundle; path = Resources/CDVCapture.bundle; sourceTree = "<group>"; };
 		2710069016A09DEF0072351B /* CDVNotification.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = CDVNotification.bundle; path = Resources/CDVNotification.bundle; sourceTree = "<group>"; };
@@ -380,6 +383,8 @@
 				9C8F9E34155FEB38008CFFA8 /* CDVMainViewController.xib */,
 				42B5EAC21250C4AF00DC666F /* PushClient.h */,
 				42B5EAC31250C4AF00DC666F /* PushClient.m */,
+				22B6AD211987C69100E44AEA /* BadgeSendPlugin.h */,
+				22B6AD221987C69100E44AEA /* BadgeSendPlugin.m */,
 			);
 			path = Classes;
 			sourceTree = SOURCE_ROOT;
@@ -814,6 +819,7 @@
 				2209C04E196199C40004B551 /* SQLitePlugin.m in Sources */,
 				2209C049196199C40004B551 /* LogMessage.m in Sources */,
 				2209C047196199C40004B551 /* JobBean.m in Sources */,
+				22B6AD231987C69100E44AEA /* BadgeSendPlugin.m in Sources */,
 				42B5EAC41250C4AF00DC666F /* PushClient.m in Sources */,
 				2209C04C196199C40004B551 /* Messenger.m in Sources */,
 				2209C04F196199C40004B551 /* Subscription.m in Sources */,

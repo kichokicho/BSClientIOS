@@ -160,29 +160,41 @@ a,u {
 }
 .bsMobileMessageI {
 	float: left;
-	margin-left: 15px;
+	margin-left: 7px;
 }
-.deleteOffButton{
+.deleteOffButtonCate{
 	float: right;
-	margin-right: 5px;
+	margin-right: 7px;
 }
 
 
-.deleteOnButton{
+.deleteOnButtonCate{
 	float: right;
-	margin-right: 5px;
+	margin-right: 7px;
 }
 
  .fa-comment{
  	color: #1172b6;
  	
  }
-
-
-.fa-envelope{
-
-	margin-left: -1.500em;
-
+.cateListcheckBox {
+	float: left;
+	width: 30px;
+	height: 30px;
+/* 	background: url('images/checkbox.png'); */
+}
+.badge {
+	   position:absolute;
+		margin-top:-10px;
+		margin-left:-7px;
+		font-size:.7em;
+		background:red;
+		color:white;
+		width:18px;height:18px;
+		text-align:center;
+		line-height:18px;
+		border-radius:50%;
+		box-shadow:0 0 1px #333;
 }
 
 /*footer....end*/
@@ -190,6 +202,10 @@ a,u {
 .main-title{ 
 /* border-bottom: 1px solid #e7e7e7; */
 /* z-index: 10000; */
+ }
+ 
+ .fa-envelope{
+ margin-left: -2px
  }
 </style>
 
@@ -230,8 +246,8 @@ a,u {
  				onclick="oRevealSidebarUI.toggleSlide()"><i
  				class="fa fa-cog fa-2x"></i></span>
 			<i class="fa fa-envelope fa-2x"></i>
-<!-- 			<span class="deleteOffButton"><a onclick="javascript:deleteButtonOffFuncton()"><i class="fa fa-check-square-o fa-2x"></i></a></span> -->
-<!-- 			<span class="deleteOnButton" style="display: none;"><a onclick="javascript:deleteSelectOnFuncton()"><i class="fa fa-trash-o fa-2x"></i></a></span> -->
+			<span class="deleteOffButtonCate"><a onclick="javascript:deleteButtonCateOffFuncton()"><i class="fa fa-check-square-o fa-2x"></i></a></span>
+			<span class="deleteOnButtonCate" style="display: none;"><a onclick="javascript:deleteSelectCateOnFuncton()"><i class="fa fa-trash-o fa-2x"></i></a></span>
 		</div>
 		<div class="rs-content">
 			<div id="scrollWrapper">
@@ -406,6 +422,7 @@ a,u {
 
 				<!-- // Scroller -->
 			</div>
+		
 		</div>
 <!-- 		<div class="rs-footer rs-title"> -->
 <!-- 			<span class="bsMobileMessageI" -->

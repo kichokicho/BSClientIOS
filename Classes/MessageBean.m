@@ -18,5 +18,6 @@
 @synthesize receivedate;
 @synthesize read;
 @synthesize category;
+@synthesize sendDate;
 
 @end

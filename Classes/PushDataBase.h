@@ -36,5 +36,6 @@
 
 - (void) deleteJob:(int)id;
 - (void) deleteTopic:(NSString *)userid whitAndTopic:(NSString *)topic;
+- (int) getMessageUnReadCount;
 
 @end

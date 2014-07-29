@@ -103,18 +103,18 @@ var pagesHistory = [];
 //currentUserCheck
 var currentLoginID;
 var currentTokenID;
-
-var deviceID;
+var listCateGory;
+//var deviceID;
 
 
 
 document.addEventListener("deviceready", loginCheck, false);
 
 function loginCheck() {
-	console.log('디바이스 아이디 ');
-	deviceID=device.uuid;
-	console.log(deviceID);
-	console.log('디바이스 아이디 끝');
+//	console.log('디바이스 아이디 ');
+//	deviceID=device.uuid;
+//	console.log(deviceID);
+//	console.log('디바이스 아이디 끝');
 	var db = window.sqlitePlugin.openDatabase({
 		name : "PushDB"
 	});
@@ -124,7 +124,7 @@ function loginCheck() {
 			console.log(res.rows.length);
 			console.log('유저정보 셀렉트 끝');
 			var currentUserCheck;
-			if(res.rows.length==1){
+			if(res.rows.length>=1){
 				currentUserCheck= "CurrentUser";
 				currentLoginID= res.rows.item(0).userid;
 				currentTokenID= res.rows.item(0).tokenid;
@@ -212,6 +212,23 @@ function wlbackFunc() {
 	}
 
 }
+//listCateGory
+
+function andResumeFunction(){
+	console.log('안드로이드 resume Function');
+
+
+	if(pagesHistory.length==0){
+		console.log("페이지 히스토리 0");
+		loginPushListSelect();	
+	}else if(pagesHistory.length==1){
+		console.log('안드로이드 글로벌 카테고리');
+		console.log(listCateGory);
+		selectDetail(listCateGory);	
+		 document.getElementById( 'bottom_div' ).scrollIntoView(true);
+	}	
+	
+}
 
 function refreshFunction(category){
 	console.log('리프레쉬 펑션');
@@ -223,6 +240,7 @@ function refreshFunction(category){
 	}else if(pagesHistory.length==1){
 		console.log("페이지 히스토리 1");
 		selectDetail(category);	
+		 document.getElementById( 'bottom_div' ).scrollIntoView(true);
 	}	
 }
 //loginPushListSelect!!
@@ -233,7 +251,31 @@ function loginPushListSelect(){
 	db.transaction(function(tx) {
 		//order  by date(receivedate) DESC		Limit 1
 		//select *  from Table order  by date(dateColumn) DESC
-		tx.executeSql("select * from message where type=0 or type=1 or type=2 or type=3 group by category order  by datetime(receivedate) desc ;",[],
+//		tx.executeSql("select *, SUM(case when read=0 then 1 else 0 end) as total from message where type=0 or type=1 or type=2 or type=3 group by category ",[],
+//				function(tx, res) {
+//					var selectLength = res.rows.length;
+//				
+//					//메세지가 없을때 						
+//					if(selectLength==0){
+//						
+//						console.log('query length is 0..');
+//						console.log(res.rows.item(0).total);
+//					}else{
+//									
+//						console.log('quer Conunt 리절트 시작');
+//						console.log(res.rows.item(0).total);
+//						console.log(res.rows.item(0).total);
+//						console.log('quer Conunt 리절트 시작');  
+//				
+//					}
+//					
+//
+//							});
+
+		
+		
+		                         //SUM(read)
+		tx.executeSql("select * , SUM(read) as total from message where type=0 or type=1 or type=2 or type=3 group by category order  by datetime(receivedate) desc ;",[],
 					function(tx, res) {
 						var selectLength = res.rows.length;
 						var htmlTagli="";
@@ -252,6 +294,10 @@ function loginPushListSelect(){
 								var notiID = res.rows.item(i).id;
 								var receivedate=res.rows.item(i).receivedate;
 								var category=res.rows.item(i).category;
+								var total=res.rows.item(i).total;
+								console.log('total');
+								console.log(total);
+								console.log('total');
 								console.log('카테고리시작 ');
 								console.log(category);
 								console.log('카테고리 끝');
@@ -280,24 +326,32 @@ function loginPushListSelect(){
 								     	contentText=contentText.substring(0, 18);
 									    contentText=contentText.concat('...');
 								  }
-								 var newItag="";
-									if(res.rows.item(i).read==1){
-										
-									newItag='style="display: none;"';
+								 var styleNonetag="";
+								 if(total==0 ||total==null){
+									 console.log('토탈이 0');
+									 styleNonetag='style="display: none;"';
+								 }else{
+									 styleNonetag="";
+								 }
+//								 var newItag="";
+//									if(res.rows.item(i).read==1){
+//										
+//									newItag='style="display: none;"';
+//									
+//									}else{
+//										newItag='';
+//										console.log('리드가 0인거');
+//									}
 									
-									}else{
-										newItag='';
-									}
-									
-									console.log("htmlstart");
-									console.log(newItag);
-									console.log("htmlend");
+//									console.log("htmlstart");
+//									console.log(newItag);
+//									console.log("htmlend");
 								 
-								htmlTagli=htmlTagli.concat('<li class="scl_o"><p class="scl_tmb"><br /> </p><a id="'+category+'" href="#"   onclick="javascript:pushLishClick(this.id);"><p class="scl_cnt"><span class="scl_messageTitle">'
-										+ category
-										+ '</span><br> <span class="scl_textContent">'
-										+ contentText
-										+ '</span><span class="scl_date" id="'+category+'">'+receivedate+'&nbsp;&nbsp;<i '+newItag+' class="fa fa-comment fa-2x"></i></span></p></a></li>');
+									htmlTagli=htmlTagli.concat('<li class="scl_o" data-val="'+category+'"><p class="scl_tmb"><br /> </p><a class="acategory" id="'+category+'" href="#"   onclick="javascript:pushLishClick(this.id);"><p class="scl_cnt"><span><input type="checkbox" value="'+category+'" name="check_catedelete" style="display:none;" class="cateListcheckBox"></span><span class="scl_messageTitle">'
+											+ category
+											+ '</span><br> <span class="scl_textContent">'
+											+ contentText
+											+ '</span><span class="scl_date" >'+receivedate+'&nbsp;&nbsp;<span '+styleNonetag+' class="badge">'+total+'</span></span></p></a></li>');
 					                     
 							
 						}    
@@ -321,7 +375,32 @@ function loginPushListSelect(){
 function nativeBack(){
 	var db = window.sqlitePlugin.openDatabase({name : "PushDB"});
 	db.transaction(function(tx) {
-		 tx.executeSql("select * from message where type=0 or type=1 or type=2 or type=3 group by category order  by datetime(receivedate)  desc ;",[],
+		
+		
+//		tx.executeSql("select *, SUM(case when read=0 then 1 else 0 end) as total from message where type=0 or type=1 or type=2 or type=3 group by category ",[],
+//				function(tx, res) {
+//					var selectLength = res.rows.length;
+//				
+//					//메세지가 없을때 						
+//					if(selectLength==0){
+//						
+//						console.log('query length is 0..');
+//						console.log(res.rows.item(0).total);
+//					}else{
+//									
+//						console.log('quer Conunt 리절트 시작');
+//						console.log(res.rows.item(0).total);
+//						console.log(res.rows.item(0).total);
+//						console.log('quer Conunt 리절트 시작');  
+//				
+//					}
+//					
+//
+//							});
+
+		
+		//read SUM(case when read=0 then 1 else 0 end) 
+		 tx.executeSql("select * ,SUM(read) as total from message where type=0 or type=1 or type=2 or type=3 group by category order  by datetime(receivedate)  desc ;",[],
 						function(tx, res) {
 							var selectLength = res.rows.length;
 							var htmlTagli="";
@@ -340,6 +419,10 @@ function nativeBack(){
 										var notiID = res.rows.item(i).id;
 										var receivedate=res.rows.item(i).receivedate;
 										var category=res.rows.item(i).category;
+										var total=res.rows.item(i).total;
+										console.log('total');
+										console.log(total);
+										console.log('total');
 										console.log('카테고리시작 ');
 										console.log(category);
 										console.log('카테고리 끝');
@@ -369,30 +452,33 @@ function nativeBack(){
 										      contentText=contentText.substring(0, 18);
 											  contentText=contentText.concat('...');
 										  }
-											 var newItag="";
-										
-										//새로운 메세지 
-									    if(res.rows.item(i).read==1){
-													
-												newItag='style="display: none;"';
-												
-										 	}else{
-													newItag='';
-									    	}
-												
-									   
-									    
-												console.log("htmlstart");
-												console.log(newItag);
-												console.log("htmlend");
-												
-											 
-											htmlTagli=htmlTagli.concat('<li class="scl_o"><p class="scl_tmb"><br /> </p><a id="'+category+'"   href="#" onclick="javascript:pushLishClick(this.id);"><p class="scl_cnt"><span class="scl_messageTitle">'
+										 var styleNonetag="";
+										 if(total==0 ||total==null){
+											 console.log('토탈이 0');
+											 styleNonetag='style="display: none;"';
+										 }else{
+											 styleNonetag="";
+										 }
+//										 var newItag="";
+//											if(res.rows.item(i).read==1){
+//												
+//											newItag='style="display: none;"';
+//											
+//											}else{
+//												newItag='';
+//												console.log('리드가 0인거');
+//											}
+											
+//											console.log("htmlstart");
+//											console.log(newItag);
+//											console.log("htmlend");
+										 
+											htmlTagli=htmlTagli.concat('<li class="scl_o" data-val="'+category+'"><p class="scl_tmb"><br /> </p><a class="acategory" id="'+category+'" href="#"   onclick="javascript:pushLishClick(this.id);"><p class="scl_cnt"><span><input type="checkbox" value="'+category+'" name="check_catedelete" style="display:none;" class="cateListcheckBox"></span><span class="scl_messageTitle">'
 													+ category
 													+ '</span><br> <span class="scl_textContent">'
 													+ contentText
-													+ '</span><span class="scl_date" id="'+category+'">'+receivedate+'&nbsp;&nbsp;<i '+newItag+' class="fa fa-comment fa-2x"></i></span></p></a></li>');
-								                    }    
+													+ '</span><span class="scl_date" >'+receivedate+'&nbsp;&nbsp;<span '+styleNonetag+' class="badge">'+total+'</span></span></p></a></li>');
+								}
 								
 								console.log("완성된 html start");
 								console.log(htmlTagli);

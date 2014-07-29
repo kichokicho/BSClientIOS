@@ -167,5 +167,10 @@
         <param name="ios-package" value="SQLitePlugin" />
     </feature>
     
+    <!-- My Plugins -->
+    <feature name="BadgeSendPlugin">
+        <param name="ios-package" value="BadgeSendPlugin" />
+	</feature>
+    
     <access origin="*" />
 </widget>

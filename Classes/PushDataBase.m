@@ -58,9 +58,6 @@
             return;
         }
         
-        NSLog(@"======  Message instert - Start ");
-        
-        
         // 조건을 바인딩합니다.
         sqlite3_bind_int(statement, 1, dMsg.id);
         sqlite3_bind_text(statement, 2, [dMsg.userid UTF8String], -1, SQLITE_TRANSIENT);
@@ -70,6 +67,7 @@
         sqlite3_bind_text(statement, 6, [dMsg.receivedate UTF8String], -1, SQLITE_TRANSIENT);
         sqlite3_bind_text(statement, 7, [dMsg.category UTF8String], -1, SQLITE_TRANSIENT);
         sqlite3_bind_int(statement, 8, dMsg.read);
+
         
         
         //쿼리를 실행한다.
@@ -157,6 +155,65 @@
     
 }
 
+
+- (int) getMessageUnReadCount
+{
+    NSLog(@"======  getMessageList - Start ");
+    
+	sqlite3_stmt *statement = nil;
+	sqlite3 *pDataBase;
+    
+//    MessageBean *pMsg = [[MessageBean alloc]init];
+    
+    @try {
+        [self dataBaseConnection:&pDataBase];    // 데이터베이스 연결
+        if (pDataBase == nil) {
+            NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
+            return nil;
+        }
+        
+        // 검색 SQL
+        const char *sql = "SELECT count(*) FROM message WHERE read = 1";
+        
+        // SQL Text를 prepared statement로 변환합니다.
+        if(sqlite3_prepare_v2(pDataBase, sql, -1, &statement, NULL) != SQLITE_OK)
+        {
+            
+            NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
+            sqlite3_close(pDataBase);   //데이터베이스를 닫는다
+            pDataBase = nil;
+            return nil;
+            
+        }
+        
+        
+		int count;
+		//쿼리를 실행한다.
+        while(sqlite3_step(statement) == SQLITE_ROW) {
+            
+            count = sqlite3_column_int(statement,0);
+            
+            NSLog(@"Message UnRead Count : %d", count);
+        }
+        
+        return count;
+        
+    }
+    @catch (NSException *exception) {
+        NSLog(@"exceptionName %@, reason %@", [exception name], [exception reason]);
+    }
+    @finally {
+        sqlite3_reset(statement);   //객체 초기화
+        sqlite3_finalize(statement);  //객체를 닫는다
+        sqlite3_close(pDataBase);   //데이터베이스를 닫는다
+        pDataBase = nil;
+        
+    }
+	
+    
+}
+
+
 - (void) insertAPNSToken:(NSString *)apnsToken //APNS Token reg.
 {
     sqlite3_stmt *statement = nil;
@@ -171,7 +228,7 @@
             return;
         }
         
-        const char *sql = "INSERT INTO apnstoken(tokenid) VALUES(?)";
+        const char *sql = "INSERT INTO device(id) VALUES(?)";
         
         
         // SQL Text를 prepared statement로 변환합니다.
@@ -223,7 +280,7 @@
         }
         
         // 검색 SQL
-        const char *sql = "SELECT tokenid FROM apnstoken";
+        const char *sql = "SELECT id FROM device";
         
         // SQL Text를 prepared statement로 변환합니다.
         if(sqlite3_prepare_v2(pDataBase, sql, -1, &statement, NULL) != SQLITE_OK)

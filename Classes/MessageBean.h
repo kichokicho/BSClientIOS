@@ -18,5 +18,6 @@
 @property (nonatomic, retain) NSString *receivedate;
 @property int  read;
 @property (nonatomic, retain) NSString *category;
+@property (nonatomic, retain) NSString *sendDate;
 
 @end

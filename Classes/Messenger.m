@@ -166,7 +166,7 @@
 //    UIWebView *pWebView = [[Messenger sharedMessenger] pWebView];
     NSMutableString *javascriptFuntion = [[NSMutableString alloc]init];
     NSDate *today;
-//    NSDate *dateNoti;
+    NSDate *dateNoti;
     
     NSMutableString *sendDate;
     NSDateFormatter *formatter;
@@ -185,69 +185,77 @@
 			case 2: // 그룹메시지(계열사)
 			case 3: // 그룹메시지(부서)
 			case 4: // 그룹메시지(직급)
-                
-                messageBean.read = 1;
-                [pDB insertMessage:messageBean];
-                if (messageBean.ack) {
-                    [tmpMS appendFormat:@"{\"userID\":\"%@\",\"id\":%d}",userid, messageBean.id];
-                    [job setType:0]; //PUBLISH
-                    [job setTopic:@"/push/ack"];
-                    [job setContent:tmpMS];
-                    
-                    [pDB insertJob:job];
-                }
-                
-                // WebView Load Finish Check
-                if (!([[Messenger sharedMessenger] webViewLoadFinish])) {
-                    NSLog(@"WebView가 아직 로드 되지 않았습니다.");
-                    break;
-                }
-                // Local Notification - start
-                
+            
                 today = [NSDate date];
                 sendDate = [[NSMutableString alloc]init];
                 [sendDate appendFormat:@"%@ +0900",messageBean.sendDate];
                 NSLog(@"======== sendDate:  %@", sendDate);
-                
+            
                 formatter = [[NSDateFormatter alloc] init];
                 [formatter setDateFormat:@"yyyy.MM.dd HH:mm:ss Z"];
-                
+            
                 pSendDate = [[NSDate alloc] init];
                 pSendDate = [formatter dateFromString:sendDate];
                 NSLog(@"======== pSendDate:  %@", [pSendDate description]);
-                
+            
                 // sendDate + 1 Day (24 * 3600 = 86400
                 pSendDateAddOneDay = [NSDate dateWithTimeInterval:86400 sinceDate:pSendDate];
                 NSLog(@"======== pSendDateAddOneDay:  %@", [pSendDateAddOneDay description]);
-                
-                // 두 날짜 비교 Compare
+            
+                // 두 날짜 비교 Compare - 하루가 지난 메세지 skip
                 NSComparisonResult compareResult = [today compare:pSendDateAddOneDay];
                 if(compareResult == -1) {
+                    
                     NSLog(@"=======   today < pSendDateAddOneDay");
-                    dContent = [jUtil jSonToObject:messageBean.content];
-                    pushInfo = [NSDictionary dictionaryWithObjectsAndKeys:messageBean.category,@"category", nil];
-                    localNotif.timeZone = [NSTimeZone defaultTimeZone];
+
+                    messageBean.read = 1;
+                    [pDB insertMessage:messageBean];
+                    if (messageBean.ack) {
+                        [tmpMS appendFormat:@"{\"userID\":\"%@\",\"id\":%d}",userid, messageBean.id];
+                        [job setType:0]; //PUBLISH
+                        [job setTopic:@"/push/ack"];
+                        [job setContent:tmpMS];
+                    
+                        [pDB insertJob:job];
+                    }
+                
+                    // WebView Load Finish Check
+                    if (!([[Messenger sharedMessenger] webViewLoadFinish])) {
+                        NSLog(@"WebView가 아직 로드 되지 않았습니다.");
+                        break;
+                    }
+                    // Local Notification - start
+                    
+                    if ([[Messenger sharedMessenger]localNoti]) {
+                        dContent = [jUtil jSonToObject:messageBean.content];
+                        pushInfo = [NSDictionary dictionaryWithObjectsAndKeys:messageBean.category,@"category", nil];
+                        localNotif.timeZone = [NSTimeZone defaultTimeZone];
+                        
+                        
+                        //javacript call name
+                        [javascriptFuntion appendFormat:@"refreshFunction('%@')",messageBean.category];
+                        localNotif.alertBody = javascriptFuntion;
+                        //                localNotif.alertBody = dContent[@"notification"][@"contentTitle"];
+                        
+                        localNotif.alertAction = @"AlertAction";
+                        localNotif.soundName = UILocalNotificationDefaultSoundName;
+                        localNotif.applicationIconBadgeNumber = 0;
+                        localNotif.userInfo = pushInfo;
+                        // 5초 후 시간 계산 - start
+                        today = [NSDate date];
+                        dateNoti = [NSDate dateWithTimeInterval:5 sinceDate:today];
+                        // 5초 후 시간 계산 - end
+                        
+                        localNotif.fireDate = dateNoti;
+                        
+                        [[UIApplication sharedApplication] scheduleLocalNotification:localNotif];
+                        [[Messenger sharedMessenger] setLocalNoti:FALSE];
+                    };
+            
                     
                     
-                    //javacript call name
-                    [javascriptFuntion appendFormat:@"refreshFunction('%@')",messageBean.category];
-                    localNotif.alertBody = javascriptFuntion;
-                    //                localNotif.alertBody = dContent[@"notification"][@"contentTitle"];
                     
-                    localNotif.alertAction = @"AlertAction";
-                    localNotif.soundName = UILocalNotificationDefaultSoundName;
-//                    localNotif.applicationIconBadgeNumber = 0;
-                    localNotif.userInfo = pushInfo;
-                    //                // 5초 후 시간 계산 - start
-                    //                today = [NSDate date];
-                    //                dateNoti = [NSDate dateWithTimeInterval:5 sinceDate:today];
-                    //                // 10초 후 시간 계산 - end
-                    
-//                    localNotif.fireDate = dateNoti;
-                    
-                    
-                    //                [[UIApplication sharedApplication] scheduleLocalNotification:localNotif];
-                    [[UIApplication sharedApplication] presentLocalNotificationNow:localNotif];
+//                    [[UIApplication sharedApplication] presentLocalNotificationNow:localNotif];
                     // Local Notification - end
                     
                     //                [pWebView stringByEvaluatingJavaScriptFromString:@"test()"];
@@ -363,6 +371,7 @@
         self.webViewLoadFinish = FALSE;
         self.apnsToken = nil;
         self.mqttConnReset = FALSE;
+        self.localNoti = TRUE;
     }
     return self;
 }

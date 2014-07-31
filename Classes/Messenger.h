@@ -24,6 +24,7 @@
 @property BOOL webViewLoadFinish;
 @property (nonatomic, retain) NSString *apnsToken;
 @property BOOL mqttConnReset;
+@property BOOL localNoti;
 
 + (id)sharedMessenger;
 - (void)connectWithHosts:(NSArray *)hosts ports:(NSArray *)ports clientId:(NSString *)clientId cleanSession:(BOOL)cleanSession;

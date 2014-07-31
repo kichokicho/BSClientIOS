@@ -71,8 +71,16 @@
         
         
         //쿼리를 실행한다.
-        if(sqlite3_step(statement) != SQLITE_DONE)
+        int resultCode = sqlite3_step(statement);
+        NSLog(@"resultCode : '%d'", resultCode);
+        
+        if( resultCode != SQLITE_DONE) {
             NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
+            
+        }
+        
+//        if(sqlite3_step(statement) != SQLITE_DONE)
+//            NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
         
         
     }
@@ -247,8 +255,17 @@
         sqlite3_bind_text(statement, 1, [apnsToken UTF8String], -1, SQLITE_TRANSIENT);  // Message
         
         //쿼리를 실행한다.
-        if(sqlite3_step(statement) != SQLITE_DONE)
+        int resultCode = sqlite3_step(statement);
+        NSLog(@"resultCode : '%d'", resultCode);
+        
+        if( resultCode != SQLITE_DONE) {
             NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
+            
+        }
+        
+//        if(sqlite3_step(statement) != SQLITE_DONE)
+//            NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
+        
     }
     @catch (NSException *exception) {
         NSLog(@"exceptionName %@, reason %@", [exception name], [exception reason]);
@@ -344,8 +361,16 @@
         
         
         //쿼리를 실행한다.
-        if(sqlite3_step(statement) != SQLITE_DONE)
+        int resultCode = sqlite3_step(statement);
+        NSLog(@"resultCode : '%d'", resultCode);
+        
+        if( resultCode != SQLITE_DONE) {
             NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
+            
+        }
+        
+//        if(sqlite3_step(statement) != SQLITE_DONE)
+//            NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
         
     }
     @catch (NSException *exception) {
@@ -400,8 +425,16 @@
         
         
         //쿼리를 실행한다.
-        if(sqlite3_step(statement) != SQLITE_DONE)
+        int resultCode = sqlite3_step(statement);
+        NSLog(@"resultCode : '%d'", resultCode);
+        
+        if( resultCode != SQLITE_DONE) {
             NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
+            
+        }
+        
+//        if(sqlite3_step(statement) != SQLITE_DONE)
+//            NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
         
         
     }
@@ -509,7 +542,7 @@
         // 조건을 바인딩합니다.
         sqlite3_bind_text(statement, 1, [topic.userid UTF8String], -1, SQLITE_TRANSIENT);
         sqlite3_bind_text(statement, 2, [topic.topic UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_int(statement, 3, topic.subscribe);
+        sqlite3_bind_int(statement, 3, 2);
         
         
         
@@ -639,8 +672,16 @@
         
         
         //쿼리를 실행한다.
-        if(sqlite3_step(statement) != SQLITE_DONE)
+        int resultCode = sqlite3_step(statement);
+        NSLog(@"resultCode : '%d'", resultCode);
+        
+        if( resultCode != SQLITE_DONE) {
             NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
+            
+        }
+        
+//        if(sqlite3_step(statement) != SQLITE_DONE)
+//            NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
         
     }
     @catch (NSException *exception) {
@@ -693,8 +734,16 @@
         
         
         //쿼리를 실행한다.
-        if(sqlite3_step(statement) != SQLITE_DONE)
+        int resultCode = sqlite3_step(statement);
+        NSLog(@"resultCode : '%d'", resultCode);
+        
+        if( resultCode != SQLITE_DONE) {
             NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
+            
+        }
+        
+//        if(sqlite3_step(statement) != SQLITE_DONE)
+//            NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
         
         
     }
@@ -811,8 +860,16 @@
         
         
         //쿼리를 실행한다.
-        if(sqlite3_step(statement) != SQLITE_DONE)
+        int resultCode = sqlite3_step(statement);
+        NSLog(@"resultCode : '%d'", resultCode);
+        
+        if( resultCode != SQLITE_DONE) {
             NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
+            
+        }
+        
+//        if(sqlite3_step(statement) != SQLITE_DONE)
+//            NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
         
     }
     @catch (NSException *exception) {
@@ -829,6 +886,283 @@
     
 }
 
+// Multi Select
+- (NSString *) getMultiSelect:(NSString *)sql type: (NSString *) type
+{
+    NSLog(@"======  getMultiSelect - Start ");
+    
+	sqlite3_stmt *statement = nil;
+	sqlite3 *pDataBase;
+    NSDictionary *typeArray;
+    NSString *item;
+    NSString *itemType;
+    NSMutableString *tempResult = [[NSMutableString alloc]init];
+    
+    
+    
+    @try {
+        [self dataBaseConnection:&pDataBase];    // 데이터베이스 연결
+        if (pDataBase == nil) {
+            NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
+            return NULL;
+        }
+        
+        // 검색 SQL
+//        const char *sql = "SELECT id,type, topic, content FROM job";
+        
+        const char *sqlTemp = [sql UTF8String];
+        
+        // SQL Text를 prepared statement로 변환합니다.
+        if(sqlite3_prepare_v2(pDataBase, sqlTemp, -1, &statement, NULL) != SQLITE_OK)
+        {
+            
+            NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
+            return NULL;
+            
+        }
+        
+
+        
+     // {"id":"int", "userid":"String", "ack":"int", "type":"int", "content":"String", "receivedte":"String", "read":"int", "category":"String", "sendDate":"String"}
+        
+        
+         [tempResult appendFormat:@"["];
+        
+        int j = 0;
+		
+		//쿼리를 실행한다.
+        while(sqlite3_step(statement) == SQLITE_ROW) {
+            
+            if (j > 0) {
+                [tempResult appendFormat:@","];
+            }
+            
+            [tempResult appendFormat:@"{"];
+            
+            for (int i=0; i < typeArray.count; i++) {
+                item = [typeArray indexOfAccessibilityElement:i];
+                itemType = [typeArray indexOfAccessibilityElement:i];
+                
+                if ([itemType isEqual:@"int"]) {
+                    
+                    [tempResult appendFormat:@" \"%@\":%d ",item,  sqlite3_column_int(statement,i)];
+
+                } else {
+                    [tempResult appendFormat:@" \"%@\":\"%@\" ",item, [[NSString alloc] initWithString:[NSString stringWithUTF8String:(char *)sqlite3_column_text(statement, i)]]];
+                }
+            };
+            
+            NSLog(@"Result  : %@", tempResult);
+            
+            [tempResult appendFormat:@"}"];
+            j++;
+        
+        }
+        
+        [tempResult appendFormat:@"]"];
+        
+        return tempResult;
+        
+    }
+    @catch (NSException *exception) {
+        NSLog(@"exceptionName %@, reason %@", [exception name], [exception reason]);
+    }
+    @finally {
+        sqlite3_reset(statement);   //객체 초기화
+        sqlite3_finalize(statement);  //객체를 닫는다
+        sqlite3_close(pDataBase);   //데이터베이스를 닫는다
+        pDataBase = nil;
+        
+    }
+	
+    
+}
+
+// Multi Insert
+- (BOOL) insertMulti:(NSString *)sql type: (NSString *) type
+{
+    NSLog(@"======  insertMulti - Start ");
+    
+	sqlite3_stmt *statement = nil;
+	sqlite3 *pDataBase;
+    NSDictionary *typeArray;
+    NSString *itemString;
+    NSString *itemType;
+    int itemInt;
+    BOOL result = FALSE;
+    
+    
+    @try {
+        [self dataBaseConnection:&pDataBase];    // 데이터베이스 연결
+        
+        
+        
+        if (pDataBase == nil) {
+            NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
+            return FALSE;
+        }
+
+//        const char *sql = "INSERT INTO job(type, topic, content) VALUES(?, ?, ?)";
+
+        const char *sqlTemp = [sql UTF8String];
+        
+        // SQL Text를 prepared statement로 변환합니다.
+        if(sqlite3_prepare_v2(pDataBase, sqlTemp, -1, &statement, NULL) != SQLITE_OK)
+        {
+            
+            NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
+            //            sqlite3_close(pDataBase);   //데이터베이스를 닫는다
+            //            pDataBase = nil;
+            return FALSE;
+        }
+        
+        // 조건을 바인딩합니다.
+//        sqlite3_bind_int(statement, 1, job.type);
+//        sqlite3_bind_text(statement, 2, [job.topic UTF8String], -1, SQLITE_TRANSIENT);
+//        sqlite3_bind_text(statement, 3, [job.content UTF8String], -1, SQLITE_TRANSIENT);
+        
+        for (int i=1; i <= typeArray.count; i++) {
+            
+            itemType = [typeArray indexOfAccessibilityElement:i];
+            
+            if ([itemType isEqual:@"int"]) {
+                
+                itemInt = [typeArray indexOfAccessibilityElement:i];
+                NSLog(@"i : %d, itemInt : %d",i, itemInt);
+                
+                sqlite3_bind_int(statement, i, itemInt);
+                
+                
+            } else {
+                itemString = [typeArray indexOfAccessibilityElement:i];
+                NSLog(@"i : %d, itemString : %@",i, itemString);
+                
+                sqlite3_bind_text(statement, i, [itemString UTF8String], -1, SQLITE_TRANSIENT);
+                
+            }
+        };
+        
+        
+        //쿼리를 실행한다.
+        int resultCode = sqlite3_step(statement);
+        NSLog(@"resultCode : '%d'", resultCode);
+        
+        if( resultCode != SQLITE_DONE) {
+            NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
+            
+        }
+        
+        
+        result = TRUE ;
+        
+    }
+    @catch (NSException *exception) {
+        NSLog(@"exceptionName %@, reason %@", [exception name], [exception reason]);
+    }
+    @finally {
+        sqlite3_reset(statement);   //객체 초기화
+        sqlite3_finalize(statement);  //객체를 닫는다
+        sqlite3_close(pDataBase);   //데이터베이스를 닫는다
+        pDataBase = nil;
+        
+        return result;
+        
+    }
+	
+    
+}
+
+
+// Multi Delete
+- (BOOL) DeleteMulti:(NSString *)sql type: (NSString *) type
+{
+    NSLog(@"======  DeleteMulti - Start ");
+    
+	sqlite3_stmt *statement = nil;
+	sqlite3 *pDataBase;
+    NSDictionary *typeArray;
+    NSString *itemString;
+    NSString *itemType;
+    int itemInt;
+    BOOL result = FALSE;
+    
+    @try {
+        [self dataBaseConnection:&pDataBase];    // 데이터베이스 연결
+        
+        if (pDataBase == nil) {
+            NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
+            return FALSE;
+        }
+        
+        //        const char *sql = "DELETE FROM job WHERE id=?";
+
+        const char *sqlTemp = [sql UTF8String];
+        
+        // SQL Text를 prepared statement로 변환합니다.
+        if(sqlite3_prepare_v2(pDataBase, sqlTemp, -1, &statement, NULL) != SQLITE_OK)
+        {
+            
+            NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
+            //            sqlite3_close(pDataBase);   //데이터베이스를 닫는다
+            //            pDataBase = nil;
+            return FALSE;
+        }
+        
+        // 조건을 바인딩합니다.
+        //        sqlite3_bind_int(statement, 1, job.type);
+        //        sqlite3_bind_text(statement, 2, [job.topic UTF8String], -1, SQLITE_TRANSIENT);
+        //        sqlite3_bind_text(statement, 3, [job.content UTF8String], -1, SQLITE_TRANSIENT);
+        
+        for (int i=1; i <= typeArray.count; i++) {
+            
+            itemType = [typeArray indexOfAccessibilityElement:i];
+            
+            if ([itemType isEqual:@"int"]) {
+                
+                itemInt = [typeArray indexOfAccessibilityElement:i];
+                NSLog(@"i : %d, itemInt : %d",i, itemInt);
+                
+                sqlite3_bind_int(statement, i, itemInt);
+                
+                
+            } else {
+                itemString = [typeArray indexOfAccessibilityElement:i];
+                NSLog(@"i : %d, itemString : %@",i, itemString);
+                
+                sqlite3_bind_text(statement, i, [itemString UTF8String], -1, SQLITE_TRANSIENT);
+                
+            }
+        };
+        
+        
+        //쿼리를 실행한다.
+        int resultCode = sqlite3_step(statement);
+        NSLog(@"resultCode : '%d'", resultCode);
+        
+        if( resultCode != SQLITE_DONE) {
+            NSLog(@"Erro Message : '%s'", sqlite3_errmsg(pDataBase));
+            
+        }
+        
+        
+        result = TRUE ;
+        
+    }
+    @catch (NSException *exception) {
+        NSLog(@"exceptionName %@, reason %@", [exception name], [exception reason]);
+    }
+    @finally {
+        sqlite3_reset(statement);   //객체 초기화
+        sqlite3_finalize(statement);  //객체를 닫는다
+        sqlite3_close(pDataBase);   //데이터베이스를 닫는다
+        pDataBase = nil;
+        
+        return result;
+        
+    }
+	
+    
+}
 
 
 

@@ -6,9 +6,6 @@ var oScroll = new jindo.m.Scroll("scrollWrapper", {
 	nHeight : 0
 });
 
-var iphonebadgeCheck=false;
-
-
 // scroll end
 
 // revealsidebar start...
@@ -31,17 +28,17 @@ jindo.m.bindPageshow(function(e) {
 });
 
 
-
+iphonebadgeCheck=false;
 
 var devicePlatform=device.platform;
-
+var orgonclick=$('.acategory').prop("onclick");
 function deleteButtonCateOffFuncton() {
 
 	console.log('헤더 클릭 편집 버튼 클릭 이벤트 ');
 	$('.deleteOffButtonCate').hide();
 	$('.deleteOnButtonCate').show();
 
-	console.log('test');
+	console.log(orgonclick);
 	 $('.acategory').removeAttr("onclick");
 		 
 	
@@ -179,59 +176,7 @@ function cateDelete(cateID) {
 
 }
 
-//var longpress;
-//
-//$(".scl_o").on('mousedown' ,function(){      
-// longpress=true;    
-// setTimeout(function() {    
-//    if(longpress)
-//     alert("long press works!");         
-//                  }, 3000);
-//});
-//$(".scl_o").on('mouseup' ,function(){      
-//    longpress=false;    
-//});
 
-
-
-//var timer;
-//var istrue = false;
-//var delay = 1000; // how much long u have to hold click in MS
-//function onMouseDown()
-//{
-//	
-//	console.log('다운이벤트');
-//   istrue = true;
-//   timer = setTimeout(function(){ makeChange();},delay);
-//}
-//function onMouseUp()
-//{
-//	
-//	console.log('업이벤트');
-//   istrue =false;
-//}
-//
-//
-//function makeChange()
-//{
-//      if(timer)
-//      clearTimeout(timer);
-//      
-//      if(istrue)
-//      {
-//            /// rest of your code
-//          alert('holding');
-//
-//      }
-//}
-
-
-//$(document).mousedown(function(e){
-//  console.log('마우스 다움!!!');
-//});   
-//$(document).mouseup(function(e){
-//    console.log('마우스 온!!!');
-//});
 
 
 // pushList Click !!
@@ -263,23 +208,23 @@ function pushLishClick(catecory) {
 		console.log('푸쉬리스트 클릭 2');
 		detailJsAdd();
                               
-//                              console.log("=======   iphonebadgeCheck :" + iphonebadgeCheck);
-//                              
-//                              console.log("=======   devicePlatform : "+ devicePlatform);
-//                              
-//                              
-//                              if(iphonebadgeCheck&&devicePlatform==="iOS"){
-//                              console.log('업데이트시 아이폰 코도바 플러그인 호출 ');
-//                              cordova.exec(badgeSendSuccess, badgeSendFailure, "BadgeSendPlugin", "badgeSend", []);
-//                              
-//                              //											iphonebadgeCheck=false;
-//                              }
-//                              
-//                              iphonebadgeCheck=false;
+                              
+                              
+//		console.log("=======   iphonebadgeCheck :" + iphonebadgeCheck);
+//        
+//        console.log("=======   devicePlatform : "+ devicePlatform);
+//        
+//        
+//        if(iphonebadgeCheck&&devicePlatform==="iOS"){
+//        console.log('업데이트시 아이폰 코도바 플러그인 호출 ');
+//        cordova.exec(badgeSendSuccess, badgeSendFailure, "BadgeSendPlugin", "badgeSend", []);
+//        
+//        //											iphonebadgeCheck=false;
+//        }
+//        
+//        iphonebadgeCheck=false;
 
 	});
-                         
-                         
 
 
 	
@@ -299,7 +244,7 @@ function detailJsAdd() {
 // pushList Click !! select Detail query page !!!
 function selectDetail(category) {
 	console.log('푸쉬리스트 클릭 3');
-	
+	var iphonebadgeCheck=false;
 	if($('.categoryTitle').length){
 		
 	}else{
@@ -423,6 +368,7 @@ function selectDetail(category) {
 //																}
 																
 																iphonebadgeCheck=true;
+                                                              console.log("update iphonebadgeCheck :" + iphonebadgeCheck);
 																//sqlite device id get 
 																
 															}else{
@@ -454,11 +400,11 @@ function selectDetail(category) {
 											var surveyNoid=contentResult.notification.noid;
 											console.log('설문조사 무기명 유무');
 											console.log(surveyNoid);
-											resultHtml=resultHtml.concat('<li id="'+notiId+'"><time class="cbp_tmtime"><span><input type="checkbox" value="'+notiId+'" name="check_delete" style="display:none;" class="mycheckbox2"></span><span style="color:#1172b6;">'+dateyyy+'</span> <span>'+datetime+'</span></time><div class="cbp_tmlabel"> <h3>'+contentTitle+'</h3><br/><div class="'+notiId+'adminData">'+decContentText+'</div><a href="#" onclick="researchRes('+notiId+','+pollId+','+surveyNoid+')" class="cd-read-more">응답</a></div></li>');
+											resultHtml=resultHtml.concat('<li id="'+notiId+'"><time class="cbp_tmtime"><span><input type="checkbox" value="'+notiId+'" name="check_delete" style="display:none;" class="detailcheckbox"></span><span style="color:#1172b6;">'+dateyyy+'</span> <span>'+datetime+'</span></time><div class="cbp_tmlabel"> <h3>'+contentTitle+'</h3><br/><div class="'+notiId+'adminData">'+decContentText+'</div><a href="#" onclick="researchRes('+notiId+','+pollId+','+surveyNoid+')" class="cd-read-more">응답</a></div></li>');
 									
 			
 											}else{
-												resultHtml=resultHtml.concat('<li id="'+notiId+'"><time class="cbp_tmtime"><span><input type="checkbox" value="'+notiId+'" name="check_delete" style="display:none;" class="mycheckbox2"></span><span style="color:#1172b6;">'+dateyyy+'</span> <span>'+datetime+'</span></time><div class="cbp_tmlabel"> <h3>'+contentTitle+'</h3><br/><div class="'+notiId+'adminData">'+decContentText+'</div><br/><a href="tel:'+userPhone+'" class="cd-read-more phonehover">'+userPhone+'</a></div></li>');
+												resultHtml=resultHtml.concat('<li id="'+notiId+'"><time class="cbp_tmtime"><span><input type="checkbox" value="'+notiId+'" name="check_delete" style="display:none;" class="detailcheckbox"></span><span style="color:#1172b6;">'+dateyyy+'</span> <span>'+datetime+'</span></time><div class="cbp_tmlabel"> <h3>'+contentTitle+'</h3><br/><div class="'+notiId+'adminData">'+decContentText+'</div><br/><a href="tel:'+userPhone+'" class="cd-read-more phonehover">'+userPhone+'</a></div></li>');
 												
 											
 											}
@@ -501,8 +447,7 @@ function selectDetail(category) {
 								
 										}	
 										
-                                    
-                                    console.log("===========  resultHtml : " + resultHtml);
+									
 										
 										$(".cbp_tmtimeline").html(resultHtml);
 									

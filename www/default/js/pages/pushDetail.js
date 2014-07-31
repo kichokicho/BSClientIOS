@@ -1,16 +1,5 @@
 
 
-$(function(){
-        if(iphonebadgeCheck&&devicePlatform==="iOS"){
-        console.log('업데이트시 아이폰 코도바 플러그인 호출 ');
-        cordova.exec(badgeSendSuccess, badgeSendFailure, "BadgeSendPlugin", "badgeSend", []);
-        
-        //											iphonebadgeCheck=false;
-        }
-        
-        iphonebadgeCheck=false;
-});
-
 $("img").click(function(){
 	var imageSource=$(this).attr('src');
 	 var imageWidth =$(this).css("width");
@@ -536,3 +525,17 @@ function pageBack() {
 					});
 			
 }
+
+$(function(){
+  console.log("=======   iphonebadgeCheck :" + iphonebadgeCheck);
+  
+  console.log("=======   devicePlatform : "+ devicePlatform);
+  if(devicePlatform==="iOS"){
+  console.log('업데이트시 아이폰 코도바 플러그인 호출 ');
+  cordova.exec(badgeSendSuccess, badgeSendFailure, "BadgeSendPlugin", "badgeSend", []);
+  
+  //											iphonebadgeCheck=false;
+  }
+  
+  iphonebadgeCheck=false;
+  });

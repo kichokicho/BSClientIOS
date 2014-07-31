@@ -63,8 +63,8 @@ static float JOBINTERVAL = 17.0f;
 //    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 
     //MQQ Connect try - start
-    [self backgroundMQTTConection];
-//    [NSTimer scheduledTimerWithTimeInterval:4.0f target:self selector:@selector(backgroundMQTTConection) userInfo:nil repeats:NO];
+//    [self backgroundMQTTConection];
+    [NSTimer scheduledTimerWithTimeInterval:4.0f target:self selector:@selector(backgroundMQTTConection) userInfo:nil repeats:NO];
     //MQQ Connect try - end
     
     //MQTT ConnectBackground loop run - start
@@ -194,7 +194,7 @@ static float JOBINTERVAL = 17.0f;
 
     UIWebView * pWebView = [[Messenger sharedMessenger]pWebView];
     [pWebView stringByEvaluatingJavaScriptFromString:javascriptFuntion];
-
+    [[Messenger sharedMessenger] setLocalNoti:TRUE];
     
 //    [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(javascriptCall) userInfo:nil repeats:NO];
 //    application.applicationIconBadgeNumber = 0;
@@ -280,7 +280,7 @@ static float JOBINTERVAL = 17.0f;
 //    [self badgeSend];
     // icon Badge  - end
     
-//    [[Messenger sharedMessenger] disconnectWithTimeout:1];
+    [[Messenger sharedMessenger] disconnectWithTimeout:1];
     
 	NSString *result = [super.viewController.webView stringByEvaluatingJavaScriptFromString:@"WL.App.BackgroundHandler.onAppEnteringBackground();"];
 	if([result isEqualToString:@"hideView"]){
@@ -358,20 +358,29 @@ static float JOBINTERVAL = 17.0f;
         MqttClient *mClient = [[Messenger sharedMessenger] client];
         
         
-        if ([[Messenger sharedMessenger] mqttConnReset]) {
-            NSLog(@"===== Background -> Forground => Connect try");
-            [self mqttConn];
-            [[Messenger sharedMessenger] setMqttConnReset:FALSE];
-
+//        if ([[Messenger sharedMessenger] mqttConnReset]) {
+//            NSLog(@"===== Background -> Forground => Connect try");
+//            [self mqttConn];
+//            [[Messenger sharedMessenger] setMqttConnReset:FALSE];
+//
+//        } else {
+//            if ([mClient isConnected]) {
+//                
+//                NSLog(@"===== MQTT Connected");
+//                
+//            } else {
+//                NSLog(@"===== not Client => Connect try");
+//                [self mqttConn];
+//            }
+//        }
+        
+        if ([mClient isConnected]) {
+            
+            NSLog(@"===== MQTT Connected");
+            
         } else {
-            if ([mClient isConnected]) {
-                
-                NSLog(@"===== MQTT Connected");
-                
-            } else {
-                NSLog(@"===== not Client => Connect try");
-                [self mqttConn];
-            }
+            NSLog(@"===== not Client => Connect try");
+            [self mqttConn];
         }
         
         
@@ -575,13 +584,13 @@ static float JOBINTERVAL = 17.0f;
     }else{
         NSLog(@"토큰 or 유저아이디가없습니다.");
         
-        UserBean *userB = [[UserBean alloc]init];
-        [userB setUserid:@"1731124"];
-        [userB setTokenid:@"e9272e69ff554b5d997a4c2"];
-        [userB setPassword:@"aaaaa"];
-        [userB setCurrentuser:1];
-        
-        [pDB insertUser:userB];
+//        UserBean *userB = [[UserBean alloc]init];
+//        [userB setUserid:@"2131064"];
+//        [userB setTokenid:@"e9272e69ff554b5d997a4c2"];
+//        [userB setPassword:@"!q2w3e4r"];
+//        [userB setCurrentuser:1];
+//        
+//        [pDB insertUser:userB];
     }
     
 }

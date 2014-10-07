@@ -26,6 +26,7 @@ static float JOBINTERVAL = 17.0f;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions 
 {
     
+    
 //    //번들에 있는 데이터베이스를 복사 - start
 //    [self CopyOfDataBaseIfNeeded];
 //    //번들에 있는 데이터베이스를 복사 - end
@@ -75,9 +76,7 @@ static float JOBINTERVAL = 17.0f;
     [NSTimer scheduledTimerWithTimeInterval:JOBINTERVAL target:self selector:@selector(backgroundJob) userInfo:nil repeats:YES];
     //Job Background loop run - start
     
-    
-    
-    
+//    [self performSelector:@selector(testP2:) withObject:num afterDelay:1.0f];
 //    [NSTimer scheduledTimerWithTimeInterval:15.0f target:self selector:@selector(testP2) userInfo:nil repeats:NO];
     
     
@@ -180,17 +179,32 @@ static float JOBINTERVAL = 17.0f;
 
 - (void) application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
     NSLog(@"====  didReceiveLocalNotification");
+    
+//    AVAudioPlayer *notiPlayer;
+//    NSBundle *l_Boundle = [NSBundle mainBundle];
+//    
+//    NSLog(@"==================================resourceURL  : %@",[l_Boundle resourceURL]);
+//    
+//    NSURL *l_NSURL = [NSURL fileURLWithPath:[l_Boundle pathForResource:@"push" ofType:@"mp3"]];
+//    
+//    notiPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:l_NSURL error:nil];
+//    
+//    [notiPlayer play];
+//    
+//    NSLog(@"====  notiPlayer  notiPlayer");
+    
+    
     //    NSDictionary *userInfo = notification.userInfo;
 //    NSString *alertBody = notification.alertBody;
-//    NSDictionary *pushInfo = notification.userInfo;
+    NSDictionary *pushInfo = notification.userInfo;
 //    NSLog(@"==== local noti TEst : %@",alertBody);
 //    NSString *contentTitle = [pushInfo objectForKey:@"contentTitle"];
-//    NSString *contentText = [pushInfo objectForKey:@"contentText"];
+//    NSString *contentText = [pushInfo objectForKey:@"refreshFunction"];
     
 //    [self PushProcess:contentText andMessageForm:contentTitle];
     //    NSString *action = [userInfo objectForKey:@"action1"];
     
-    NSString *javascriptFuntion = notification.alertBody;
+    NSString *javascriptFuntion = [pushInfo objectForKey:@"refreshFunction"];
 
     UIWebView * pWebView = [[Messenger sharedMessenger]pWebView];
     [pWebView stringByEvaluatingJavaScriptFromString:javascriptFuntion];
@@ -208,6 +222,8 @@ static float JOBINTERVAL = 17.0f;
     [pWebView stringByEvaluatingJavaScriptFromString:@"refreshFunction('경조사')"];
 
 }
+
+
 
 
 
@@ -300,7 +316,7 @@ static float JOBINTERVAL = 17.0f;
 
 - (void)applicationDidBecomeActive:(UIApplication *)application 
 {
-//    application.applicationIconBadgeNumber = 0;
+ //   application.applicationIconBadgeNumber = 0;
 	[super applicationDidBecomeActive:application];
     /*
      * If you need to do any extra app-specific stuff, you can do it here.
@@ -682,7 +698,7 @@ static float JOBINTERVAL = 17.0f;
                 mClient = [[Messenger sharedMessenger] client];
                 if ([mClient isConnected]) {
                     // UNSUBSCRIBE
-                    [[Messenger sharedMessenger] unsubscribe:job.topic];
+                    [[Messenger sharedMessenger] unsubscribe: job.topic];
                     
                     //Topic DB Delete
                     [pDB deleteTopic:userID whitAndTopic:job.topic];

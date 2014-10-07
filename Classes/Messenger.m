@@ -227,18 +227,27 @@
                     // Local Notification - start
                     
                     if ([[Messenger sharedMessenger]localNoti]) {
-                        dContent = [jUtil jSonToObject:messageBean.content];
-                        pushInfo = [NSDictionary dictionaryWithObjectsAndKeys:messageBean.category,@"category", nil];
-                        localNotif.timeZone = [NSTimeZone defaultTimeZone];
-                        
                         
                         //javacript call name
                         [javascriptFuntion appendFormat:@"refreshFunction('%@')",messageBean.category];
-                        localNotif.alertBody = javascriptFuntion;
-                        //                localNotif.alertBody = dContent[@"notification"][@"contentTitle"];
+                        
+                        
+                        dContent = [jUtil jSonToObject:messageBean.content];
+//                        pushInfo = [NSDictionary dictionaryWithObjectsAndKeys:messageBean.category,@"category", nil];
+                        pushInfo = [NSDictionary dictionaryWithObjectsAndKeys:javascriptFuntion,@"refreshFunction", nil];
+                        localNotif.timeZone = [NSTimeZone defaultTimeZone];
+                        
+                        
+                        
+                        //localNotif.alertBody = javascriptFuntion;
+                        localNotif.alertBody = dContent[@"notification"][@"contentTitle"];
+                        
                         
                         localNotif.alertAction = @"AlertAction";
                         localNotif.soundName = UILocalNotificationDefaultSoundName;
+//                        localNotif.soundName = @"push.caf";
+//                        
+//                         NSLog(@"=======   localNotif.soundName : %@",localNotif.soundName);
                         localNotif.applicationIconBadgeNumber = 0;
                         localNotif.userInfo = pushInfo;
                         // 5초 후 시간 계산 - start
@@ -250,6 +259,7 @@
                         
                         [[UIApplication sharedApplication] scheduleLocalNotification:localNotif];
                         [[Messenger sharedMessenger] setLocalNoti:FALSE];
+                        
                     };
             
                     
@@ -340,7 +350,9 @@
 {
     NSLog(@"GeneralCallbacks - onMessageDelivered!");
 }
+
 @end
+
 
 
 @implementation Messenger

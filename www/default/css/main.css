@@ -10,3 +10,10 @@ body {
 	margin: 0 auto;
 	width: 320px;
 }
+
+@media screen and (device-width:768px) and (device-height:1024px) {
+	body {
+        width: 768px;
+    }
+
+}

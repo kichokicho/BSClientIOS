@@ -124,15 +124,15 @@
  */
 
 ////#pragma mark CDVOrientationDelegate
-//-(BOOL)shouldAutorotate
-//{
-//    return YES;
-//}
-//
-//-(NSUInteger)supportedInterfaceOrientations {
-//    return UIInterfaceOrientationMaskAll;
-//
-//}
+-(BOOL)shouldAutorotate
+{
+    return NO;
+}
+
+-(NSUInteger)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskAll;
+
+}
 
 
 - (void)viewWillAppear:(BOOL)animated

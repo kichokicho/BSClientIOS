@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "MqttOCClient.h"
 #import "PushDataBase.h"
+#import <AVFoundation/AVFoundation.h>
 
 @interface Messenger : NSObject {
     MqttClient *client;

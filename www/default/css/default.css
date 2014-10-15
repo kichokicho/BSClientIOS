@@ -8,7 +8,7 @@ body, html { padding: 0; margin: 0;}
 .clearfix:after { clear: both; }
 
 body {
-    background-color: #e9f0f5;
+    background-color: white;
 }
 
 a {

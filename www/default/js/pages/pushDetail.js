@@ -21,11 +21,7 @@ $("img").click(function(){
 	 console.log(imageWidth);
 	 console.log(imageHeight);
 	 console.log('이미지 src end');
-               
-               imageWidth = imageWidth * 3;
-               imageHeight = imageHeight * 3;
-     
-     window.open(imageSource,'myWin','height='+imageHeight+', width='+imageWidth+', resizable=yes');
+     window.open(imageSource,'_system','height='+imageHeight+', width='+imageWidth+', resizable=yes');
 //   var ccc =  window.open('pages/test.html','myWin','height='+imageHeight+', width='+imageWidth+', resizable=yes');
     
                

@@ -24,6 +24,9 @@
         // Custom initialization
     }
     
+    NSLog(@"=========   initWithNibName ");
+//    [super webView.  setBackgroundColor:[UIColor whiteColor]];
+    
     
     return self;
 }
@@ -40,7 +43,11 @@
 
 - (void)viewDidLoad
 {
+    NSLog(@"=========   viewDidLoad ");
+    
     [super viewDidLoad];
+    self.webView.backgroundColor =[UIColor whiteColor];
+//    [self.webView setBackgroundColor:[UIColor whiteColor]];
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -66,7 +73,7 @@
  */
 - (void)webViewDidFinishLoad:(UIWebView *)theWebView 
 {
-    
+    NSLog(@"=========   webViewDidFinishLoad ");
     //WebView save
     [[Messenger sharedMessenger] setPWebView:self.webView];
     [[Messenger sharedMessenger] setWebViewLoadFinish:TRUE];
@@ -82,10 +89,11 @@
 
 - (void)webViewDidStartLoad:(UIWebView *)theWebView 
 {
-    
+    NSLog(@"=========   webViewDidStartLoad ");
     
 	return [ super webViewDidStartLoad:theWebView ];
 }
+
 
 /**
  * Fail Loading With Error
@@ -93,6 +101,7 @@
  */
 - (void)webView:(UIWebView *)theWebView didFailLoadWithError:(NSError *)error 
 {
+    NSLog(@"=========   webView ");
 	return [ super webView:theWebView didFailLoadWithError:error ];
 }
 
@@ -103,7 +112,8 @@
  */
 - (BOOL)webView:(UIWebView *)theWebView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
-    
+    NSLog(@"=========   webView2 ");
+//    [theWebView setBackgroundColor:[UIColor whiteColor]];
 	return [ super webView:theWebView shouldStartLoadWithRequest:request navigationType:navigationType ];
 }
 
@@ -149,7 +159,7 @@
         viewBounds.size.height = viewBounds.size.height - 20;
         self.webView.frame = viewBounds;
     }
-    
+    [self.webView setBackgroundColor:[UIColor whiteColor]];
     [super viewWillAppear:animated];
 }
 

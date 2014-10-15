@@ -65,6 +65,7 @@ var wlInitOptions = {
 // busyOptions: {text: "Loading..."}
 };
 
+
 if (window.addEventListener) {
 	window.addEventListener('load', function() {
 		WL.Client.init(wlInitOptions);
@@ -74,8 +75,6 @@ if (window.addEventListener) {
 		WL.Client.init(wlInitOptions);
 	});
 }
-
-
 
 function pushListJSAtOnload() {
 	var element = document.createElement("script");
@@ -99,85 +98,112 @@ function b64_to_utf8(str) {
 	return decodeURIComponent(escape(window.atob(str)));
 }
 
-
 WL.App.overrideBackButton(wlbackFunc);
 
 
-
-//현재 날자 구하기 
-function nowDateResult(){
+// 현재 날자 구하기
+function nowDateResult() {
 	var nowDate = new Date();
 	var year = "" + nowDate.getFullYear();
-	var  month = "" + (nowDate.getMonth() + 1); if (month.length == 1) { month = "0" + month; }
-	var  day = "" + nowDate.getDate(); if (day.length == 1) { day = "0" + day; }
-	var  hour = "" + nowDate.getHours(); if (hour.length == 1) { hour = "0" + hour; }
-	var  minute = "" + nowDate.getMinutes(); if (minute.length == 1) { minute = "0" + minute; }
-	var  second = "" + nowDate.getSeconds(); if (second.length == 1) { second = "0" + second; }
-	var dateNowResult=year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
+	var month = "" + (nowDate.getMonth() + 1);
+	if (month.length == 1) {
+		month = "0" + month;
+	}
+	var day = "" + nowDate.getDate();
+	if (day.length == 1) {
+		day = "0" + day;
+	}
+	var hour = "" + nowDate.getHours();
+	if (hour.length == 1) {
+		hour = "0" + hour;
+	}
+	var minute = "" + nowDate.getMinutes();
+	if (minute.length == 1) {
+		minute = "0" + minute;
+	}
+	var second = "" + nowDate.getSeconds();
+	if (second.length == 1) {
+		second = "0" + second;
+	}
+	var dateNowResult = year + "-" + month + "-" + day + " " + hour + ":"
+			+ minute + ":" + second;
 	console.log('현재 날짜 구하기 결과');
-	console.log(dateNowResult); 
+	console.log(dateNowResult);
 	return dateNowResult;
 }
-//현재 날자 yyyy-mm-dd hh:mm:ss
-var nowDataResult=nowDateResult();
+// 현재 날자 yyyy-mm-dd hh:mm:ss
+var nowDataResult = nowDateResult();
 console.log('현재 날짜 구하기 yyyy-mm-dd hh:mm:ss');
 console.log(nowDataResult);
 
-
-//busyindicator!!
+// busyindicator!!
 window.busy = new WL.BusyIndicator();
-//pageHistory!!
+// pageHistory!!
 var pagesHistory = [];
 var currentLoginID;
 var currentTokenID;
 var listCateGory;
 
-
 document.addEventListener("deviceready", loginCheck, false);
 
 function loginCheck() {
 
-	var db = window.sqlitePlugin.openDatabase({
-		name : "PushDB"
-	});
-	db.transaction(function(tx) {
-		tx.executeSql("select * from user where currentuser=1;", [], function(tx, res) {
-			console.log('커런트 유저 =1 셀렉트 결과값');
-			console.log(res.rows.length);
-			console.log('커런트 유저 =1 셀렉트 결과값');
-			var currentUserCheck;
-			if(res.rows.length>=1){
-				currentUserCheck= "CurrentUser";
-				currentLoginID= res.rows.item(0).userid;
-				currentTokenID= res.rows.item(0).tokenid;
-			}else{
-				currentUserCheck="notCurrentUser";
-			}
-			//user Info check
-			console.log("커런트유저 체크");
-			console.log(currentUserCheck);
-			console.log("커런트유저 체크");
-			
-			if (currentUserCheck=="CurrentUser") {
-			
-				$('#page-container').load("pages/pushList.html",function() {
-					console.log('카테고리 리스트로 이동');
-					 cateListSelect();
-						});
-			} else {
-				console.log("커런트유저가 존재하지 않음!");
-				$('#page-container').load("pages/pushLogin.html", function() {
-					//임시 코드
-					console.log('로그인 페이지로 이동');
 
-				});
-			}
 
+		var db = window.sqlitePlugin.openDatabase({
+			name : "PushDB"
 		});
-	});
+		db.transaction(function(tx) {
+			tx.executeSql("select * from user where currentuser=1;", [],
+					function(tx, res) {
+						console.log('커런트 유저 =1 셀렉트 결과값');
+						console.log(res.rows.length);
+						console.log('커런트 유저 =1 셀렉트 결과값');
+						var currentUserCheck;
+						if (res.rows.length >= 1) {
+							currentUserCheck = "CurrentUser";
+							currentLoginID = res.rows.item(0).userid;
+							currentTokenID = res.rows.item(0).tokenid;
+						} else {
+							currentUserCheck = "notCurrentUser";
+						}
+						// user Info check
+						console.log("커런트유저 체크");
+						console.log(currentUserCheck);
+						console.log("커런트유저 체크");
+
+						if (currentUserCheck == "CurrentUser") {
+
+							$('#page-container').load("pages/pushList.html",
+									function() {
+										console.log('카테고리 리스트로 이동');
+										cateListSelect();
+									});
+						} else {
+							console.log("커런트유저가 존재하지 않음!");
+							$('#page-container').load("pages/pushLogin.html",
+									function() {
+										// 임시 코드
+										console.log('로그인 페이지로 이동');
+
+									});
+						}
+
+					}, function(e) {
+						
+//						$('#page-container').load("pages/pushLogin.html",
+//								function() {
+//									// 임시 코드
+//									console.log('로그인 페이지로 이동');
+//
+//								});
+						
+					      console.log("셀렉트 커런트 유저 에라 " + e.message);
+				    });
+		});
+
 
 }
-
 
 function wlbackFunc() {
 
@@ -197,102 +223,126 @@ function wlbackFunc() {
 
 }
 
-//for android
-function andResumeFunction(){
+// for android
+function andResumeFunction() {
 	console.log('안드로이드 resume Function');
 
-	if(pagesHistory.length==0){
-		cateListSelect();	
-	}else if(pagesHistory.length==1){
+	if (pagesHistory.length == 0) {
+		cateListSelect();
+	} else if (pagesHistory.length == 1) {
 		console.log('안드로이드 카테고리');
 		console.log(listCateGory);
-		selectDetail(listCateGory);	
-		 document.getElementById( 'bottom_div' ).scrollIntoView(true);
-	}	
-	
+		selectDetail(listCateGory);
+		document.getElementById('bottom_div').scrollIntoView(true);
+	}
+
 }
 
-function refreshFunction(category){
+function refreshFunction(category) {
 	console.log('새로고침 함수');
 	console.log(category);
 
-	if(pagesHistory.length==0){
-		cateListSelect();	
-	}else if(pagesHistory.length==1){
-		selectDetail(category);	
-		 document.getElementById( 'bottom_div' ).scrollIntoView(true);
-	}	
+	if (pagesHistory.length == 0) {
+		cateListSelect();
+	} else if (pagesHistory.length == 1) {
+		selectDetail(category);
+		document.getElementById('bottom_div').scrollIntoView(true);
+	}
 }
-//cateListSelect!!
-function cateListSelect(){
+// cateListSelect!!
+function cateListSelect() {
 	var db = window.sqlitePlugin.openDatabase({
 		name : "PushDB"
 	});
-	db.transaction(function(tx) {
-		tx.executeSql("select * , SUM(read) as total from message where type=0 or type=1 or type=2 or type=3 group by category order  by datetime(receivedate) desc ;",[],
-					function(tx, res) {
-						var selectLength = res.rows.length;
-						var htmlTagli="";
-						//메세지가 없을때 						
-						if(selectLength==0){
-							htmlTagli=htmlTagli.concat("<br/><br/><br/><p style='text-align:center;color:#1172b6;'>수신된 메세지가 없습니다.</p>");
-							$(".ul_pushList").html(htmlTagli);
-						//수신된 메세지가 있을때
-						}else{
-							console.log('카테고리 리스트 만들기 시작');		
-						for (var i = 0; i < selectLength; i++) {
-								
-								var contentResult = res.rows.item(i).content;
-								console.log(contentResult);
-								var notiID = res.rows.item(i).id;
-								var receivedate=res.rows.item(i).receivedate;
-								var category=res.rows.item(i).category;
-								var total=res.rows.item(i).total;
-								var subReceive=receivedate.substring(0,10);
-								var subnowDate=nowDataResult.substring(0, 10);
-								if(subReceive==subnowDate){
-									receivedate=receivedate.substring(11,receivedate.length);
+	db
+			.transaction(function(tx) {
+				tx
+						.executeSql(
+								"select * , SUM(read) as total from message where type=0 or type=1 or type=2 or type=3 group by category order  by datetime(receivedate) desc ;",
+								[],
+								function(tx, res) {
+									var selectLength = res.rows.length;
+									var htmlTagli = "";
+									// 메세지가 없을때
+									if (selectLength == 0) {
+										htmlTagli = htmlTagli
+												.concat("<br/><br/><br/><p style='text-align:center;color:#1172b6;'>수신된 메세지가 없습니다.</p>");
+										$(".ul_pushList").html(htmlTagli);
+										// 수신된 메세지가 있을때
+									} else {
+										console.log('카테고리 리스트 만들기 시작');
+										for (var i = 0; i < selectLength; i++) {
 
-								}else{
-									receivedate=receivedate.substring(0,10);
-								}
-								contentResult = JSON.parse(contentResult);
-								var contentText=contentResult.notification.contentText;
-								 if(contentText.length>20){
-								     	contentText=contentText.substring(0, 18);
-									    contentText=contentText.concat('...');
-								  }
-								 var styleNonetag="";
-								 if(total==0 ||total==null){
-									 styleNonetag='style="display: none;"';
-								 }else{
-									 styleNonetag="";
-								 }
-		 
-									htmlTagli=htmlTagli.concat('<li class="scl_o" data-val="'+category+'"><p class="scl_tmb"><br /> </p><a class="acategory" id="'+category+'" href="#"   onclick="javascript:pushLishClick(this.id);"><p class="scl_cnt"><span><input type="checkbox" value="'+category+'" name="check_catedelete" style="display:none;" class="cateListcheckBox"></span><span class="scl_messageTitle">'
-											+ category
-											+ '</span><br> <span class="scl_textContent">'
-											+ contentText
-											+ '</span><span class="scl_date" >'+receivedate+'&nbsp;&nbsp;<span '+styleNonetag+' class="badge">'+total+'</span></span></p></a></li>');
-					                     
-							
-						}    
-						console.log("완성된 카테고리 리스트");
-						console.log(htmlTagli);
-						$(".ul_pushList").html(htmlTagli);
-						
-						oScroll.refresh();
-						console.log('카테고리 리스트 만들기 끝');
-						}
-						
+											var contentResult = res.rows
+													.item(i).content;
+											console.log(contentResult);
+											var notiID = res.rows.item(i).id;
+											var receivedate = res.rows.item(i).receivedate;
+											var category = res.rows.item(i).category;
+											var total = res.rows.item(i).total;
+											var subReceive = receivedate
+													.substring(0, 10);
+											var subnowDate = nowDataResult
+													.substring(0, 10);
+											if (subReceive == subnowDate) {
+												receivedate = receivedate
+														.substring(
+																11,
+																receivedate.length);
+
+											} else {
+												receivedate = receivedate
+														.substring(0, 10);
+											}
+											contentResult = JSON
+													.parse(contentResult);
+											var contentText = contentResult.notification.contentText;
+											if (contentText.length > 20) {
+												contentText = contentText
+														.substring(0, 18);
+												contentText = contentText
+														.concat('...');
+											}
+											var styleNonetag = "";
+											if (total == 0 || total == null) {
+												styleNonetag = 'style="display: none;"';
+											} else {
+												styleNonetag = "";
+											}
+
+											htmlTagli = htmlTagli
+													.concat('<li class="scl_o" data-val="'
+															+ category
+															+ '"><p class="scl_tmb"><br /> </p><a class="acategory" id="'
+															+ category
+															+ '" href="#"   onclick="javascript:pushLishClick(this.id);"><p class="scl_cnt"><span><input type="checkbox" value="'
+															+ category
+															+ '" name="check_catedelete" style="display:none;" class="cateListcheckBox"></span><span class="scl_messageTitle">'
+															+ category
+															+ '</span><br> <span class="scl_textContent">'
+															+ contentText
+															+ '</span><span class="scl_date" >'
+															+ receivedate
+															+ '&nbsp;&nbsp;<span '
+															+ styleNonetag
+															+ ' class="badge">'
+															+ total
+															+ '</span></span></p></a></li>');
+
+										}
+										console.log("완성된 카테고리 리스트");
+										console.log(htmlTagli);
+										$(".ul_pushList").html(htmlTagli);
+
+										oScroll.refresh();
+										console.log('카테고리 리스트 만들기 끝');
+									}
 
 								});
 
 			});
-	
-	
-}
 
+}
 
 
 

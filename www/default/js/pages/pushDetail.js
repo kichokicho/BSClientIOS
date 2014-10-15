@@ -9,8 +9,6 @@ $(function(){
         iphonebadgeCheck=false;
 });
 
-
-
 //image click
 $("img").click(function(){
 	var imageSource=$(this).attr('src');
@@ -21,10 +19,8 @@ $("img").click(function(){
 	 console.log(imageWidth);
 	 console.log(imageHeight);
 	 console.log('이미지 src end');
-     window.open(imageSource,'_system','height='+imageHeight+', width='+imageWidth+', resizable=yes');
-//   var ccc =  window.open('pages/test.html','myWin','height='+imageHeight+', width='+imageWidth+', resizable=yes');
-    
-               
+     
+     window.open(imageSource,'_system','height='+imageHeight+', width='+imageWidth+'');
 
 });
 

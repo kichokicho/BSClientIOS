@@ -37,9 +37,9 @@ function loginFunction() {
 						$.ajax({
 							// https://210.108.94.90/pushAdmin/
 							// url :'http://210.108.94.90/v1/auth',
-					//		url : 'http://tbsmoffice.busanbank.co.kr/v1/auth',
+//							url : 'https://bsmoffice.busanbank.co.kr/v1/auth',
 							url : 'http://adflow.net:8080/v1/auth',
-							// url : 'http://192.168.42.2:9090/v1/auth',
+//							 url : 'http://192.168.42.2:8080/v1/auth',
 							type : 'POST',
 							timeout : 10000,
 							contentType : "application/json",
@@ -98,9 +98,9 @@ function loginFunction() {
 						$.ajax({
 							// https://210.108.94.90/pushAdmin/
 							// url :'http://210.108.94.90/v1/auth',
-//							url : 'http://tbsmoffice.busanbank.co.kr/v1/auth',
+//							url : 'https://bsmoffice.busanbank.co.kr/v1/auth',
 							url : 'http://adflow.net:8080/v1/auth',
-							// url : 'http://192.168.42.2:9090/v1/auth',
+//							 url : 'http://192.168.42.2:8080/v1/auth',
 							type : 'POST',
 							timeout : 10000,
 							contentType : "application/json",
